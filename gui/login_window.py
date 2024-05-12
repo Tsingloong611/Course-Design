@@ -3,6 +3,8 @@ import tkinter as tk
 from tkinter import messagebox
 from authentication import AuthenticationLogic
 from gui.admin_window import AdminWindow
+from gui.student_window import StudentWindow
+from gui.teacher_window import TeacherWindow
 
 
 class LoginWindow:
@@ -50,8 +52,10 @@ class LoginWindow:
         user = self.authentication_logic.login(id, password, mode)
         if user and mode == "students":
             messagebox.showinfo("登录成功", f"欢迎学生{user['username']}")
+            StudentWindow(tk.Toplevel(self.window), id)
         elif user and mode == "teachers":
             messagebox.showinfo("登录成功", f"欢迎教师{user['username']}")
+            TeacherWindow(tk.Toplevel(self.window), id)
         elif user and mode == "admins":
             messagebox.showinfo("登录成功", f"欢迎管理员{user['username']}")
             AdminWindow(tk.Toplevel(self.window))

@@ -1,6 +1,6 @@
 # @File: admin_window.py
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, ttk
 from tools import *
 from admin import AdminLogic
 
@@ -19,46 +19,196 @@ class AdminWindow:
         self.operate_config_button = tk.Button(self.window, text="管理配置文件", command=self.operate_config)
         self.operate_config_button.pack()
 
+        self.register_course_button = tk.Button(self.window, text="开通课程", command=self.register_courses)
+        self.register_course_button.pack()
 
-
+        self.delete_course_button = tk.Button(self.window, text="删除课程", command=self.delete_courses)
+        self.delete_course_button.pack()
 
     def operate_accounts(self):
         page = tk.Toplevel(self.window)
         page.title("管理账户")
-        page.geometry("600x600")
+        page.geometry("1000x600")
 
         listbox = tk.Listbox(page)
         listbox.grid(row=0, column=0, padx=10, pady=10)
 
-        mode = tk.StringVar()
-        mode.set("选择操作对象类型")
+        userinfo = tk.Label(page,
+                            text="\r首先“选择操作对象类型”，然后在列表中选中要操作的对象，或者在“待操作对象ID”中手动输入“对象ID”，点击“确认操作对象”，最后执行相应操作。")
+        userinfo.grid(row=0, column=1, padx=10, pady=10)
 
-        mode_select = tk.OptionMenu(page, mode, "students", "teachers", "admins",
-                                    command=lambda x: self.admin_logic.update_listbox(listbox, "accounts_data", mode.get()))
-        mode_select.grid(row=1, column=1, padx=10, pady=10)
+        button_mode = ("normal", "disabled")
 
-        choose_label = tk.Label(page, text="请选择操作对象类型")
-        choose_label.grid(row=1, column=0, padx=10, pady=10)
+        list_mode = tk.StringVar()
+        list_mode.set("选择操作对象类型")
+
+        list_mode_select = tk.OptionMenu(page, list_mode, "students", "teachers", "admins",
+                                         command=lambda x: self.admin_logic.update_account_listbox(listbox,
+                                                                                                   list_mode.get()))
+        list_mode_select.grid(row=1, column=1, padx=10, pady=10)
+
+        choose_object = tk.StringVar()
+        choose_object.set("选择操作对象类型")
+        choose_entry = tk.Entry(page, textvariable=choose_object, state=button_mode[0])
+        choose_entry.grid(row=1, column=0, padx=10, pady=10)
 
         confirm_id = tk.StringVar()
         confirm_id.set("待操作对象ID")
 
-        confirm_button = tk.Button(page, text="确认操作对象",
-                                   command=lambda: confirm_id.set(self.admin_logic.get_object(listbox)[0]))
+        confirm_password = tk.StringVar()
+        confirm_password.set("新密码")
+
+        confirm_button = tk.Button(page, text="确认操作对象", state=button_mode[0],
+                                   command=lambda: self.admin_logic.confirm_object(listbox, confirm_id=confirm_id,
+                                                                                   confirm_button=confirm_button,
+                                                                                   button_mode=button_mode,
+                                                                                   delete_button=delete_button,
+                                                                                   reset_button=reset_button,
+                                                                                   confirm_entry=confirm_id_entry,
+                                                                                   choose_entry=choose_entry))
         confirm_button.grid(row=2, column=1, padx=10, pady=10)
 
-        confirm_entry = tk.Entry(page, textvariable=confirm_id)
-        confirm_entry.grid(row=2, column=0, padx=10, pady=10)
+        confirm_id_entry = tk.Entry(page, textvariable=confirm_id)
+        confirm_id_entry.grid(row=2, column=0, padx=10, pady=10)
 
-        delete_button = tk.Button(page, text="删除", command=lambda: self.admin_logic.delete_accounts(mode.get(), confirm_id.get()))
-        delete_button.grid(row=3, column=0, padx=10, pady=10)
+        confirm_password_entry = tk.Entry(page, textvariable=confirm_password)
+        confirm_password_entry.grid(row=3, column=0, padx=10, pady=10)
+
+        delete_button = tk.Button(page, text="删除", state=button_mode[1],
+                                  command=lambda: self.admin_logic.delete_accounts(list_mode.get(), confirm_id,
+                                                                                   confirm_button, confirm_id_entry,
+                                                                                   delete_button, reset_button,
+                                                                                   button_mode))
+        delete_button.grid(row=4, column=0, padx=10, pady=10)
+
+        reset_button = tk.Button(page, text="重置密码", state=button_mode[1],
+                                 command=lambda: self.admin_logic.reset_password(list_mode.get(), confirm_id,
+                                                                                 confirm_password, confirm_button,
+                                                                                 confirm_id_entry, delete_button,
+                                                                                 reset_button,
+                                                                                 button_mode))
+        reset_button.grid(row=5, column=0, padx=10, pady=10)
+
+        reoperate_button = tk.Button(page, text="重新操作",
+                                     command=lambda: self.admin_logic.reoperate(list_mode, listbox, confirm_id,
+                                                                                confirm_password,
+                                                                                confirm_button, confirm_id_entry,
+                                                                                delete_button, reset_button,
+                                                                                button_mode))
+        reoperate_button.grid(row=6, column=0, padx=10, pady=10)
+
+        add_button = tk.Button(page, text="添加",
+                               command=lambda: self.admin_logic.add_accounts(list_mode.get(), confirm_id.get(),
+                                                                             confirm_username.get(),
+                                                                             confirm_password.get()))
+        add_button.grid(row=7, column=0, padx=10, pady=10)
+
+        confirm_username = tk.StringVar()
+        confirm_username.set("用户名")
+        confirm_username_entry = tk.Entry(page, textvariable=confirm_username)
+        confirm_username_entry.grid(row=3, column=1, padx=10, pady=10)
 
     def operate_config(self):
         page = tk.Toplevel(self.window)
         page.title("管理配置文件")
-        page.geometry("300x300")
-        label = tk.Label(page, text="这是页面2")
-        label.pack()
+        page.geometry("1000x600")
+
+        confirm_key = tk.StringVar()
+        confirm_key.set("待操作对象ID")
+        confirm_value = tk.StringVar()
+        confirm_value.set("新值")
+        listbox = tk.Listbox(page)
+        listbox.grid(row=0, column=0, padx=10, pady=10)
+
+        confirm_button = tk.Button(page, text="确认操作对象",
+                                   command=lambda: self.admin_logic.confirm_object(listbox, confirm_id=confirm_key))
+        confirm_button.grid(row=1, column=0, padx=10, pady=10)
+
+        confirm_key_entry = tk.Entry(page, textvariable=confirm_key)
+        confirm_key_entry.grid(row=1, column=1, padx=10, pady=10)
+
+        confirm_value_entry = tk.Entry(page, textvariable=confirm_value)
+        confirm_value_entry.grid(row=1, column=2, padx=10, pady=10)
+
+        change_button = tk.Button(page, text="修改",
+                                  command=lambda: tools().save_config(confirm_key.get(), confirm_value.get()))
+        change_button.grid(row=2, column=0, padx=10, pady=10)
+
+        reoperate_button = tk.Button(page, text="刷新",
+                                     command=lambda: self.admin_logic.update_config_listbox(listbox))
+        reoperate_button.grid(row=6, column=0, padx=10, pady=10)
+
+    def register_courses(self):
+        page = tk.Toplevel(self.window)
+        notebook = ttk.Notebook(page)
+
+        times = [str(item) for item in range(1, 13)]
+        checkboxes = {}
+
+        for i in range(1, 11):  # Display 10 weeks
+            frame = ttk.Frame(notebook)
+            notebook.add(frame, text=f"Week {i}")
+
+            for j in range(5):  # 5 days in a week
+                date_label = ttk.Label(frame, text="Monday Tuesday Wednesday Thursday Friday".split()[j])
+                date_label.grid(row=0, column=j)
+
+                for idx, time in enumerate(times):
+                    var = tk.IntVar()
+                    checkbox = ttk.Checkbutton(frame, text=time, variable=var)
+                    checkbox.grid(row=idx + 1, column=j)
+                    checkboxes[str(i) + " " + str(j + 1) + " " + time] = var
+
+        other_frame = ttk.Frame(notebook)
+        notebook.add(other_frame, text="其他信息")
+
+        id_label = ttk.Label(other_frame, text="课程ID")
+        id_label.pack()
+        id_entry = ttk.Entry(other_frame)
+        id_entry.pack()
+        name_label = ttk.Label(other_frame, text="课程名")
+        name_label.pack()
+        name_entry = ttk.Entry(other_frame)
+        name_entry.pack()
+        term_label = ttk.Label(other_frame, text="学期")
+        term_label.pack()
+        term_entry = ttk.Entry(other_frame)
+        term_entry.pack()
+        teacher_id_label = ttk.Label(other_frame, text="教师ID")
+        teacher_id_label.pack()
+        teacher_id_entry = ttk.Entry(other_frame)
+        teacher_id_entry.pack()
+        notebook.pack()
+
+        btn = tk.Button(page, text="Submit",
+                        command=lambda: self.admin_logic.confirm_register_course(checkboxes, id=id_entry.get(),
+                                                                                 name=name_entry.get(),
+                                                                                 term=term_entry.get(),
+                                                                                 teacher_id=teacher_id_entry.get()))
+        btn.pack()
+
+    def delete_courses(self):
+        page = tk.Toplevel(self.window)
+        page.title("删除课程")
+        page.geometry("1000x600")
+
+        listbox = tk.Listbox(page)
+        listbox.grid(row=0, column=0, padx=10, pady=10)
+
+        self.admin_logic.update_course_listbox(listbox)
+
+        confirm_button = tk.Button(page, text="确认操作对象",
+                                   command=lambda: self.admin_logic.confirm_object(listbox, confirm_id=confirm_id))
+        confirm_button.grid(row=1, column=0, padx=10, pady=10)
+
+        confirm_id = tk.StringVar()
+        confirm_id.set("待操作对象ID")
+        confirm_id_entry = tk.Entry(page, textvariable=confirm_id)
+        confirm_id_entry.grid(row=1, column=1, padx=10, pady=10)
+
+        delete_button = tk.Button(page, text="删除",
+                                  command=lambda: self.admin_logic.delete_courses(confirm_id.get()))
+        delete_button.grid(row=2, column=0, padx=10, pady=10)
 
 
 if __name__ == "__main__":
