@@ -43,7 +43,10 @@ class StudentLogic:
         course = tools().load_data(type="courses", id=course_id)
         new_course = {"course_id": course_id,
                       "grade": "Not Graded"}
-        if student_id in course["student_ids"]:
+        if not course:
+            messagebox.showerror("错误", "选课失败，课程不存在")
+            return False
+        elif student_id in course["student_ids"]:
             messagebox.showerror("错误", "选课失败，已选过该课程")
             return False
         else:
@@ -80,7 +83,10 @@ class StudentLogic:
         student = tools().load_data(type="students", id=student_id)
         courses = tools().load_data(type="courses")
         course = tools().load_data(type="courses", id=course_id)
-        if student_id not in course["student_ids"]:
+        if not course:
+            messagebox.showerror("错误", "退课失败，课程不存在")
+            return False
+        elif student_id not in course["student_ids"]:
             messagebox.showerror("错误", "退课失败，未选过该课程")
             return False
         else:
@@ -102,69 +108,101 @@ class StudentLogic:
     def update_course_listbox(self, listbox, student_id, term, mode):
         listbox.delete(0, tk.END)
         keys = tools().load_data("statement")["course_attributes"]
+
         if term != "all":
             courses = [course for course in tools().load_data("courses") if course["term"] == term]
         else:
             courses = [course for course in tools().load_data("courses")]
-        statement_str = "".join("{:<20}".format(key) for key in keys)
+
+        statement_str = "".join("{:<20}".format(key) for key in keys) + "{:<20}".format("teacher_name")
 
         if mode == "enroll":
             lst = [i for i in courses if student_id not in i["student_ids"]]
             listbox.insert(0, statement_str)
             for item in lst:
-                row_str = "".join("{:<20}".format(item[key]) for key in keys)
+                teacher_id = item["teacher_id"]
+                teacher_name = tools().get_info(type="teachers", id=teacher_id, mode="username")
+                row_str = "".join("{:<20}".format(item[key]) for key in keys) + "{:<20}".format(teacher_name)
                 listbox.insert(tk.END, row_str)
 
         elif mode == "exit":
             lst = [i for i in courses if student_id in i["student_ids"]]
             listbox.insert(0, statement_str)
             for item in lst:
-                row_str = "".join("{:<20}".format(item[key]) for key in keys)
+                teacher_id = item["teacher_id"]
+                teacher_name = tools().get_info(type="teachers", id=teacher_id, mode="username")
+                row_str = "".join("{:<20}".format(item[key]) for key in keys) + "{:<20}".format(teacher_name)
                 listbox.insert(tk.END, row_str)
 
         elif mode == "grade":
             lst = [i for i in courses if student_id in i["student_ids"]]
-            statement_str = "".join("{:<20}".format(key) for key in keys) + "grade"
+            statement_str = statement_str + "{:<20}".format("grade")
             listbox.insert(0, statement_str)
-            student_courses = tools().load_data(type="students",id=student_id)["enrolled_courses"]
+            student_courses = tools().load_data(type="students", id=student_id)["enrolled_courses"]
             for item in lst:
                 grade = ""
                 course_id = item["id"]
+                teacher_id = item["teacher_id"]
+                teacher_name = tools().get_info(type="teachers", id=teacher_id, mode="username")
                 for course in student_courses:
                     if course["course_id"] == course_id:
-                        print(course)
                         grade = course["grade"]
-                row_str = "".join("{:<20}".format(item[key]) for key in keys) + grade
+                row_str = "".join("{:<20}".format(item[key]) for key in keys) + "{:<20}{:<20}".format(teacher_name,
+                                                                                                      grade)
                 listbox.insert(tk.END, row_str)
-
-
 
         max_length = max(len(row_str) for row_str in listbox.get(0, tk.END))
         listbox.config(width=max_length)
 
-    def confirm_object(self, listbox, **kwargs):
-        confirm_id = kwargs.get("confirm_id", None)
-        confirm_button = kwargs.get("confirm_button", None)
-        button_mode = kwargs.get("button_mode", None)
-        confirm_entry = kwargs.get("confirm_entry", None)
-        delete_button = kwargs.get("delete_button", None)
-        reset_button = kwargs.get("reset_button", None)
-        choose_entry = kwargs.get("choose_entry", None)
-        if self.get_object(listbox)[0] not in ["id", "key"]:
-            confirm_id.set(self.get_object(listbox)[0])
-            choose_entry.config(text=confirm_button.cget("text"))
-            choose_entry.config(state=button_mode[1])
-            confirm_button.config(state=button_mode[1])
-            confirm_entry.config(state=button_mode[1])
-            delete_button.config(state=button_mode[0])
-            reset_button.config(state=button_mode[0])
-        else:
-            messagebox.showwarning("警告", "请正确选择操作对象!")
+    def confirm_object(self, listbox, mode, **kwargs):
+        STATE = kwargs.get("state", None)
+        if mode == "course_center":
+            confirm_id = kwargs.get("confirm_id", None)
+            submit_assignment_button = kwargs.get("submit_assignment_button", None)
+            show_grade_button = kwargs.get("show_grade_button", None)
+            discussion_forum_button = kwargs.get("discussion_forum_button", None)
+            if confirm_id.get() == "待操作对象ID":
+                if listbox.curselection():
+                    if self.get_object(listbox)[0] not in ["id"]:
+                        confirm_id.set(self.get_object(listbox)[0])
+                        submit_assignment_button.config(state=STATE[1])
+                        show_grade_button.config(state=STATE[1])
+                        discussion_forum_button.config(state=STATE[1])
+                    else:
+                        messagebox.showwarning("警告", "请正确选择列表内容作为操作对象!")
+                else:
+                    messagebox.showwarning("警告", "请从列表选取对象或者手动指定对象ID")
+            elif confirm_id.get() != "待操作对象ID" and listbox.curselection():
+                if self.get_object(listbox)[0] not in ["id"]:
+                    confirm_id.set(self.get_object(listbox)[0])
+                    submit_assignment_button.config(state=STATE[1])
+                    show_grade_button.config(state=STATE[1])
+                    discussion_forum_button.config(state=STATE[1])
+                else:
+                    messagebox.showwarning("警告", "请正确选择列表内容作为操作对象!")
+
+
+
+        elif mode == "enroll_course" or mode == "exit_course":
+            confirm_id = kwargs.get("confirm_id", None)
+            if confirm_id.get() == "待操作对象ID":
+                if listbox.curselection():
+                    if self.get_object(listbox)[0] not in ["id"]:
+                        confirm_id.set(self.get_object(listbox)[0])
+                    else:
+                        messagebox.showwarning("警告", "请正确选择列表内容作为操作对象!")
+                else:
+                    messagebox.showwarning("警告", "请从列表选取对象或者手动指定对象ID")
+            elif confirm_id.get() != "待操作对象ID" and listbox.curselection():
+                if self.get_object(listbox)[0] not in ["id"]:
+                    confirm_id.set(self.get_object(listbox)[0])
+                else:
+                    messagebox.showwarning("警告", "请正确选择列表内容作为操作对象!")
 
     def get_object(self, listbox):
         return str(listbox.get(listbox.curselection())).split()
 
-    def update_course_schedule(self, student_id, selected_term, selected_week,labels,page):
+    def update_course_schedule(self, student_id, selected_term, selected_week, labels, page):
         courses = [course for course in tools().load_data(type="courses") if student_id in course["student_ids"]]
         selected_week = selected_week.get().split()[1]
         selected_term = selected_term.get()
@@ -190,7 +228,7 @@ class StudentLogic:
         directory = f"./data/materials_data/{course_id}/homeworks/{student_id}/"
         tools().check_dir(directory)
         shutil.copy(assignment_path, directory)
-        messagebox.showinfo("上传",f"已将{assignment_path}上传至{directory}")
+        messagebox.showinfo("上传", f"已将{assignment_path}上传至{directory}")
 
     def show_grade(self, student_id, course_id):
         student = tools().load_data(type="students", id=student_id)

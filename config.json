@@ -1,4 +1,6 @@
 {
     "auto_backup": "1",
-    "allow_course_conflict": "0"
+    "allow_course_conflict": "0",
+    "show_password": "0",
+    "week_num": "10"
 }

@@ -63,28 +63,34 @@ class TeacherLogic:
                             labels.append(label)
 
     def confirm_object(self, listbox, listbox_two, **kwargs):
-        confirm_id = kwargs.get("confirm_id", None)
-        confirm_button = kwargs.get("confirm_button", None)
-        button_mode = kwargs.get("button_mode", None)
-        confirm_entry = kwargs.get("confirm_entry", None)
-        delete_button = kwargs.get("delete_button", None)
-        reset_button = kwargs.get("reset_button", None)
-        choose_entry = kwargs.get("choose_entry", None)
-        if self.get_object(listbox)[0] not in ["id", "key"]:
-            confirm_id.set(self.get_object(listbox)[0])
-            self.update_student_listbox(listbox=listbox_two, course_id=confirm_id.get())
-            choose_entry.config(text=confirm_button.cget("text"))
-            choose_entry.config(state=button_mode[1])
-            confirm_button.config(state=button_mode[1])
-            confirm_entry.config(state=button_mode[1])
-            delete_button.config(state=button_mode[0])
-            reset_button.config(state=button_mode[0])
 
+        STATE = kwargs.get("state", None)
+        if listbox.curselection():
+            if self.get_object(listbox)[0] not in ["id"]:
+                confirm_id = kwargs.get("confirm_id", None)
+
+                upload_materials_button = kwargs.get("upload_materials_button", None)
+                discussion_forum_button = kwargs.get("discussion_forum_button", None)
+
+                confirm_id.set(self.get_object(listbox)[0])
+
+                upload_materials_button.config(state=STATE[1])
+                discussion_forum_button.config(state=STATE[1])
+                self.update_student_listbox(listbox=listbox_two, course_id=confirm_id.get())
+            else:
+                messagebox.showwarning("警告", "请正确选择列表内容作为操作对象!")
         else:
-            messagebox.showwarning("警告", "请正确选择操作对象!")
+            messagebox.showwarning("警告", "请选择操作对象!")
 
-    def confirm_student(self, listbox_two, confirm_two_id):
-        confirm_two_id.set(self.get_object(listbox_two)[0])
+    def confirm_student(self, listbox_two, confirm_two_id,show_homework_button):
+        if listbox_two.curselection():
+            if self.get_object(listbox_two)[0] not in ["id"]:
+                confirm_two_id.set(self.get_object(listbox_two)[0])
+                show_homework_button.config(state="normal")
+            else:
+                messagebox.showwarning("警告", "请正确选择列表内容作为操作对象!")
+        else:
+            messagebox.showwarning("警告", "请选择操作对象!")
 
     def get_object(self, listbox):
         return str(listbox.get(listbox.curselection())).split()
@@ -111,8 +117,9 @@ class TeacherLogic:
                 tools().save_data(type="students", new_datas=students)
                 break
 
-    def show_assignment(self, course_id,student_id):
+    def show_assignment(self, course_id, student_id):
         directory_path = fr'.\data\materials_data\{course_id}\homeworks\{student_id}'
         if not os.path.exists(directory_path):
             os.makedirs(directory_path)
         os.startfile(directory_path)
+

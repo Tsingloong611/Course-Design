@@ -30,83 +30,135 @@ class AdminWindow:
         page.title("管理账户")
         page.geometry("1000x600")
 
-        listbox = tk.Listbox(page)
-        listbox.grid(row=0, column=0, padx=10, pady=10)
+        # 常变量区
+        STATE = ("disabled", "normal")
 
-        userinfo = tk.Label(page,
-                            text="\r首先“选择操作对象类型”，然后在列表中选中要操作的对象，或者在“待操作对象ID”中手动输入“对象ID”，点击“确认操作对象”，最后执行相应操作。")
-        userinfo.grid(row=0, column=1, padx=10, pady=10)
+        # 账户可视化区
+        accounts_listbox = tk.Listbox(page)
+        accounts_listbox.grid(row=0, column=0, padx=10, pady=10)
 
-        button_mode = ("normal", "disabled")
-
-        list_mode = tk.StringVar()
-        list_mode.set("选择操作对象类型")
-
-        list_mode_select = tk.OptionMenu(page, list_mode, "students", "teachers", "admins",
-                                         command=lambda x: self.admin_logic.update_account_listbox(listbox,
-                                                                                                   list_mode.get()))
+        accounts_listbox_mode = tk.StringVar()
+        accounts_listbox_mode.set("选择操作对象类型")
+        list_mode_select = tk.OptionMenu(page, accounts_listbox_mode, "students", "teachers", "admins",
+                                         command=lambda x: self.admin_logic.update_account_listbox(accounts_listbox,
+                                                                                                   accounts_listbox_mode.get()))
         list_mode_select.grid(row=1, column=1, padx=10, pady=10)
 
-        choose_object = tk.StringVar()
-        choose_object.set("选择操作对象类型")
-        choose_entry = tk.Entry(page, textvariable=choose_object, state=button_mode[0])
-        choose_entry.grid(row=1, column=0, padx=10, pady=10)
-
-        confirm_id = tk.StringVar()
-        confirm_id.set("待操作对象ID")
-
-        confirm_password = tk.StringVar()
-        confirm_password.set("新密码")
-
-        confirm_button = tk.Button(page, text="确认操作对象", state=button_mode[0],
-                                   command=lambda: self.admin_logic.confirm_object(listbox, confirm_id=confirm_id,
+        confirm_button = tk.Button(page, text="确认操作对象", state=STATE[1],
+                                   command=lambda: self.admin_logic.confirm_object(accounts_listbox,mode="accounts",
+                                                                                   add_button=add_button,
+                                                                                   accounts_listbox_mode=accounts_listbox_mode,
+                                                                                   choose_object=choose_object,
+                                                                                   confirm_id=confirm_id,
                                                                                    confirm_button=confirm_button,
-                                                                                   button_mode=button_mode,
+                                                                                   state=STATE,
                                                                                    delete_button=delete_button,
                                                                                    reset_button=reset_button,
-                                                                                   confirm_entry=confirm_id_entry,
-                                                                                   choose_entry=choose_entry))
+                                                                                   confirm_id_entry=confirm_id_entry,
+                                                                                   confirm_username_entry=confirm_username_entry))
+
         confirm_button.grid(row=2, column=1, padx=10, pady=10)
 
+        # 确认操作对象区
+        choose_object = tk.StringVar()
+        choose_object.set("选择操作对象类型")
+        choose_entry = tk.Entry(page, textvariable=choose_object, state=STATE[0])
+        choose_entry.grid(row=1, column=0, padx=10, pady=10)
+
+        # ID确定区
+        confirm_id = tk.StringVar()
+        confirm_id.set("待操作对象ID")
         confirm_id_entry = tk.Entry(page, textvariable=confirm_id)
         confirm_id_entry.grid(row=2, column=0, padx=10, pady=10)
 
+        # 用户名确定区
+        confirm_username = tk.StringVar()
+        confirm_username.set("用户名")
+        confirm_username_entry = tk.Entry(page, textvariable=confirm_username, state=STATE[0])
+        confirm_username_entry.grid(row=3, column=1, padx=10, pady=10)
+
+        # Password确定区
+        confirm_password = tk.StringVar()
+        confirm_password.set("新密码")
         confirm_password_entry = tk.Entry(page, textvariable=confirm_password)
         confirm_password_entry.grid(row=3, column=0, padx=10, pady=10)
 
-        delete_button = tk.Button(page, text="删除", state=button_mode[1],
-                                  command=lambda: self.admin_logic.delete_accounts(list_mode.get(), confirm_id,
-                                                                                   confirm_button, confirm_id_entry,
-                                                                                   delete_button, reset_button,
-                                                                                   button_mode))
-        delete_button.grid(row=4, column=0, padx=10, pady=10)
-
-        reset_button = tk.Button(page, text="重置密码", state=button_mode[1],
-                                 command=lambda: self.admin_logic.reset_password(list_mode.get(), confirm_id,
-                                                                                 confirm_password, confirm_button,
-                                                                                 confirm_id_entry, delete_button,
-                                                                                 reset_button,
-                                                                                 button_mode))
-        reset_button.grid(row=5, column=0, padx=10, pady=10)
-
-        reoperate_button = tk.Button(page, text="重新操作",
-                                     command=lambda: self.admin_logic.reoperate(list_mode, listbox, confirm_id,
-                                                                                confirm_password,
-                                                                                confirm_button, confirm_id_entry,
-                                                                                delete_button, reset_button,
-                                                                                button_mode))
-        reoperate_button.grid(row=6, column=0, padx=10, pady=10)
-
-        add_button = tk.Button(page, text="添加",
-                               command=lambda: self.admin_logic.add_accounts(list_mode.get(), confirm_id.get(),
+        # 添加账号按钮
+        add_button = tk.Button(page, text="添加", state=STATE[0],
+                               command=lambda: self.admin_logic.add_accounts(accounts_listbox_mode.get(),
+                                                                             confirm_id.get(),
                                                                              confirm_username.get(),
-                                                                             confirm_password.get()))
+                                                                             confirm_password.get(),
+                                                                             add_button=add_button,
+                                                                             listbox=accounts_listbox,
+                                                                             confirm_username=confirm_username,
+                                                                             accounts_listbox_mode=accounts_listbox_mode,
+                                                                             choose_object=choose_object,
+                                                                             confirm_id=confirm_id,
+                                                                             confirm_button=confirm_button,
+                                                                             state=STATE,
+                                                                             confirm_password=confirm_password,
+                                                                             delete_button=delete_button,
+                                                                             reset_button=reset_button,
+                                                                             confirm_id_entry=confirm_id_entry,
+                                                                             confirm_username_entry=confirm_username_entry
+                                                                             ))
         add_button.grid(row=7, column=0, padx=10, pady=10)
 
-        confirm_username = tk.StringVar()
-        confirm_username.set("用户名")
-        confirm_username_entry = tk.Entry(page, textvariable=confirm_username)
-        confirm_username_entry.grid(row=3, column=1, padx=10, pady=10)
+        # 删除账号按钮
+        delete_button = tk.Button(page, text="删除", state=STATE[0],
+                                  command=lambda: self.admin_logic.delete_accounts(accounts_listbox_mode.get(),
+                                                                                   confirm_id.get(), add_button=add_button,
+                                                                                   listbox=accounts_listbox,
+                                                                                   confirm_username=confirm_username,
+                                                                                   accounts_listbox_mode=accounts_listbox_mode,
+                                                                                   choose_object=choose_object,
+                                                                                   confirm_id=confirm_id,
+                                                                                   confirm_button=confirm_button,
+                                                                                   state=STATE,
+                                                                                   confirm_password=confirm_password,
+                                                                                   delete_button=delete_button,
+                                                                                   reset_button=reset_button,
+                                                                                   confirm_id_entry=confirm_id_entry,
+                                                                                   confirm_username_entry=confirm_username_entry))
+        delete_button.grid(row=4, column=0, padx=10, pady=10)
+
+        # 修改密码按钮
+        reset_button = tk.Button(page, text="重置密码", state=STATE[0],
+                                 command=lambda: self.admin_logic.reset_password(accounts_listbox_mode.get(),
+                                                                                 confirm_id.get(),
+                                                                                 confirm_password.get(),
+                                                                                 add_button=add_button,
+                                                                                 listbox=accounts_listbox,
+                                                                                 confirm_username=confirm_username,
+                                                                                 accounts_listbox_mode=accounts_listbox_mode,
+                                                                                 choose_object=choose_object,
+                                                                                 confirm_id=confirm_id,
+                                                                                 confirm_button=confirm_button,
+                                                                                 state=STATE,
+                                                                                 confirm_password=confirm_password,
+                                                                                 delete_button=delete_button,
+                                                                                 reset_button=reset_button,
+                                                                                 confirm_id_entry=confirm_id_entry,
+                                                                                 confirm_username_entry=confirm_username_entry))
+        reset_button.grid(row=5, column=0, padx=10, pady=10)
+
+        # 重新操作按钮
+        reoperate_button = tk.Button(page, text="重新操作",
+                                     command=lambda: self.admin_logic.reoperate(add_button=add_button,
+                                                                                listbox=accounts_listbox,
+                                                                                confirm_username=confirm_username,
+                                                                                accounts_listbox_mode=accounts_listbox_mode,
+                                                                                choose_object=choose_object,
+                                                                                confirm_id=confirm_id,
+                                                                                confirm_button=confirm_button,
+                                                                                state=STATE,
+                                                                                confirm_password=confirm_password,
+                                                                                delete_button=delete_button,
+                                                                                reset_button=reset_button,
+                                                                                confirm_id_entry=confirm_id_entry,
+                                                                                confirm_username_entry=confirm_username_entry))
+        reoperate_button.grid(row=6, column=0, padx=10, pady=10)
 
     def operate_config(self):
         page = tk.Toplevel(self.window)
@@ -121,7 +173,7 @@ class AdminWindow:
         listbox.grid(row=0, column=0, padx=10, pady=10)
 
         confirm_button = tk.Button(page, text="确认操作对象",
-                                   command=lambda: self.admin_logic.confirm_object(listbox, confirm_id=confirm_key))
+                                   command=lambda: self.admin_logic.confirm_object(listbox, mode="configs", confirm_key=confirm_key))
         confirm_button.grid(row=1, column=0, padx=10, pady=10)
 
         confirm_key_entry = tk.Entry(page, textvariable=confirm_key)
@@ -144,12 +196,12 @@ class AdminWindow:
 
         times = [str(item) for item in range(1, 13)]
         checkboxes = {}
-
-        for i in range(1, 11):  # Display 10 weeks
+        n = int(tools().load_config()["week_num"])
+        for i in range(n):
             frame = ttk.Frame(notebook)
-            notebook.add(frame, text=f"Week {i}")
+            notebook.add(frame, text=f"Week {i+1}")
 
-            for j in range(5):  # 5 days in a week
+            for j in range(5):
                 date_label = ttk.Label(frame, text="Monday Tuesday Wednesday Thursday Friday".split()[j])
                 date_label.grid(row=0, column=j)
 
@@ -157,7 +209,7 @@ class AdminWindow:
                     var = tk.IntVar()
                     checkbox = ttk.Checkbutton(frame, text=time, variable=var)
                     checkbox.grid(row=idx + 1, column=j)
-                    checkboxes[str(i) + " " + str(j + 1) + " " + time] = var
+                    checkboxes[str(i + 1) + " " + str(j + 1) + " " + time] = var
 
         other_frame = ttk.Frame(notebook)
         notebook.add(other_frame, text="其他信息")
@@ -198,7 +250,7 @@ class AdminWindow:
         self.admin_logic.update_course_listbox(listbox)
 
         confirm_button = tk.Button(page, text="确认操作对象",
-                                   command=lambda: self.admin_logic.confirm_object(listbox, confirm_id=confirm_id))
+                                   command=lambda: self.admin_logic.confirm_object(listbox, mode="courses", confirm_id=confirm_id))
         confirm_button.grid(row=1, column=0, padx=10, pady=10)
 
         confirm_id = tk.StringVar()

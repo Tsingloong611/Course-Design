@@ -14,7 +14,7 @@ class DiscussionForumLogic:
         topic = self.topic_entry.get()
         content = self.write_content_text.get("1.0", tk.END)
 
-        self.topics.append({"topic": self.poster + "发布了" + topic, "content": content})
+        self.topics.append({"topic": self.poster + "发布了 " + topic, "content": content})
 
         with open(self.path, "w") as file:
             json.dump(self.topics, file)

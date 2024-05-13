@@ -5,8 +5,8 @@ import json
 
 
 class DiscussionForumWindow:
-    def __init__(self, root, course_id="3", id="student1", type="student"):
-        self.id = id
+    def __init__(self, root, course_id="3", name="student1", type="student"):
+        self.name = name
         self.type = type
         self.forum_logic = DiscussionForumLogic()
         self.window = root
@@ -31,7 +31,7 @@ class DiscussionForumWindow:
 
         self.post_button = tk.Button(self.window, text="发布",
                                      command=lambda: self.forum_logic.post(path=self.path,
-                                                                           poster=self.type + self.id,
+                                                                           poster=f"[{self.type}]{self.name} ",
                                                                            topic_entry=self.topic_entry,
                                                                            write_content_text=self.write_content_text))
 

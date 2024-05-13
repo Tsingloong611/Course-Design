@@ -3,9 +3,12 @@ from gui.discussion_forum_window import DiscussionForumWindow
 from student import StudentLogic
 import tkinter as tk
 
+from tools import tools
+
 
 class StudentWindow:
     def __init__(self, root, student_id):
+        self.STATE=["disabled","normal"]
         self.student_id = student_id
         self.window = root
         self.window.title("Student Window")
@@ -47,16 +50,16 @@ class StudentWindow:
         listbox.grid(row=1, column=0, padx=10, pady=10)
 
         update_list_button = tk.Button(page, text="确定学期",
-                                       command=lambda: self.student_logic.update_course_listbox(listbox,
-                                                                                                self.student_logic.update_course_listbox(
-                                                                                                    listbox,
-                                                                                                    student_id=self.student_id,
-                                                                                                    term=selected_term.get(),
-                                                                                                    mode="enroll")))
+                                       command=lambda: (
+                                           self.student_logic.update_course_listbox(
+                                               listbox,
+                                               student_id=self.student_id,
+                                               term=selected_term.get(),
+                                               mode="enroll")))
         update_list_button.grid(row=0, column=2)
 
         confirm_button = tk.Button(page, text="确认操作对象",
-                                   command=lambda: self.student_logic.confirm_object(listbox, confirm_id=confirm_id))
+                                   command=lambda: self.student_logic.confirm_object(listbox,mode="enroll_course", confirm_id=confirm_id))
         confirm_button.grid(row=2, column=0, padx=10, pady=10)
 
         confirm_id = tk.StringVar()
@@ -87,8 +90,8 @@ class StudentWindow:
         # 创建周选择下拉菜单
         week_label = tk.Label(page, text="选择周:")
         week_label.grid(row=0, column=2)
-
-        weeks = [f"Week {i + 1}" for i in range(10)]
+        n = int(tools().load_config()["week_num"])
+        weeks = [f"Week {i + 1}" for i in range(n)]
         selected_week = tk.StringVar()
         selected_week.set(weeks[0])
 
@@ -116,7 +119,7 @@ class StudentWindow:
 
     def exit_course_page(self):
         page = tk.Toplevel(self.window)
-        page.title("加入课程")
+        page.title("退出课程")
         page.geometry("1000x600")
 
         term_label = tk.Label(page, text="选择学期:")
@@ -140,7 +143,7 @@ class StudentWindow:
         update_list_button.grid(row=0, column=2)
 
         confirm_button = tk.Button(page, text="确认操作对象",
-                                   command=lambda: self.student_logic.confirm_object(listbox, confirm_id=confirm_id))
+                                   command=lambda: self.student_logic.confirm_object(listbox,mode="exit_course", confirm_id=confirm_id))
         confirm_button.grid(row=2, column=0, padx=10, pady=10)
 
         confirm_id = tk.StringVar()
@@ -178,29 +181,35 @@ class StudentWindow:
         listbox.grid(row=1, column=0, padx=10, pady=10)
 
         confirm_button = tk.Button(page, text="确认操作对象",
-                                   command=lambda: self.student_logic.confirm_object(listbox, confirm_id=confirm_id))
+                                   command=lambda: self.student_logic.confirm_object(listbox, mode="course_center",
+                                                                                     confirm_id=confirm_id,
+                                                                                     state = self.STATE,
+                                                                                     submit_assignment_button=submit_assignment_button,
+                                                                                     show_grade_button=show_grade_button,
+                                                                                     discussion_forum_button=discussion_forum_button))
         confirm_button.grid(row=2, column=0, padx=10, pady=10)
 
         confirm_id = tk.StringVar()
         confirm_id.set("待操作对象ID")
-        confirm_id_entry = tk.Entry(page, textvariable=confirm_id)
+        confirm_id_entry = tk.Entry(page, textvariable=confirm_id, state=self.STATE[0])
         confirm_id_entry.grid(row=2, column=1, padx=10, pady=10)
 
-        submit_assignment_button = tk.Button(page, text="提交作业",
+        submit_assignment_button = tk.Button(page, text="提交作业", state=self.STATE[0],
                                              command=lambda: self.student_logic.submit_assignment(self.student_id,
                                                                                                   confirm_id.get()))
         submit_assignment_button.grid(row=3, column=0, padx=10, pady=10)
 
-        show_grade_button = tk.Button(page, text="查看成绩",
+        show_grade_button = tk.Button(page, text="查看成绩", state=self.STATE[0],
                                       command=lambda: self.student_logic.show_grade(self.student_id, confirm_id.get()))
 
         show_grade_button.grid(row=3, column=1, padx=10, pady=10)
 
-        discussion_forum_button = tk.Button(page, text="讨论区",
+        discussion_forum_button = tk.Button(page, text="讨论区", state=self.STATE[0],
                                             command=lambda: DiscussionForumWindow(tk.Toplevel(page),
                                                                                   course_id=confirm_id.get(),
-                                                                                  id=self.student_id,
-                                                                                  type="student"))
+                                                                                  name=tools().get_info(type="students",
+                                                                                                        id=self.student_id),
+                                                                                  type="Student"))
         discussion_forum_button.grid(row=3, column=2, padx=10, pady=10)
 
     def all_grade_page(self):

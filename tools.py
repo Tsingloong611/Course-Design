@@ -16,8 +16,10 @@ class tools:
         else:
             with open("config.json", "w") as f:
                 configs = {
-                    "auto_backup": True,
-                    "if_allow_conflict_in_course_selection_hours": False
+                    "auto_backup": "1",
+                    "allow_course_conflict": "0",
+                    "show_password": "0",
+                    "week_num": "10"
                 }
                 json.dump(configs, f, indent=4)
                 return configs
@@ -161,3 +163,51 @@ class tools:
     def check_dir(self, path):
         if not os.path.exists(path):
             os.makedirs(os.path.dirname(path), exist_ok=True)
+
+    def get_info(self, type, id, mode="username"):
+        obj = self.load_data(type=type, id=id)
+        return obj[mode]
+
+    def initialize(self):
+        statement = {
+            "account_attributes": ["id", "username", "password"],
+            "config_attributes": ["key", "value"],
+            "course_attributes": ["id", "name", "term", "teacher_id"],
+        }
+        students = [
+            {"id": "1", "username": "student_test", "password": "1",
+             "enrolled_courses": [{"course_id": "0", "grade": "100"}]},
+        ]
+
+        teachers = [
+            {"id": "1", "username": "teacher_test", "password": "1", "teaching_courses": [{"course_id": "0"}]}
+        ]
+
+        admins = [
+            {"id": "1", "username": "admin_test", "password": "1"}
+        ]
+
+        courses = [{
+            "id": "1",
+            "name": "test_course",
+            "term": "1",
+            "time": [],
+            "teacher_id": "1",
+            "student_ids": []
+        }]
+
+        accounts = {"statement": statement, "students": students, "teachers": teachers, "admins": admins,
+                    "courses": courses}
+
+        configs = {
+            "auto_backup": "1",
+            "allow_course_conflict": "0",
+            "show_password": "0",
+            "week_num": "10"
+        }
+
+        with open("./data/data.json", "w") as f:
+            json.dump(accounts, f, indent=4)
+
+        with open("config.json", "w") as f:
+            json.dump(configs, f, indent=4)
