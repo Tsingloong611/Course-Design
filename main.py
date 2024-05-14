@@ -7,5 +7,6 @@ def start():
     main_window = MainWindow(root)
     root.mainloop()
 
+
 if __name__ == '__main__':
     start()

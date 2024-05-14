@@ -82,7 +82,7 @@ class TeacherLogic:
         else:
             messagebox.showwarning("警告", "请选择操作对象!")
 
-    def confirm_student(self, listbox_two, confirm_two_id,show_homework_button):
+    def confirm_student(self, listbox_two, confirm_two_id, show_homework_button):
         if listbox_two.curselection():
             if self.get_object(listbox_two)[0] not in ["id"]:
                 confirm_two_id.set(self.get_object(listbox_two)[0])
@@ -122,4 +122,3 @@ class TeacherLogic:
         if not os.path.exists(directory_path):
             os.makedirs(directory_path)
         os.startfile(directory_path)
-

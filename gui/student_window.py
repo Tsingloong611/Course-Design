@@ -8,7 +8,7 @@ from tools import tools
 
 class StudentWindow:
     def __init__(self, root, student_id):
-        self.STATE=["disabled","normal"]
+        self.STATE = ["disabled", "normal"]
         self.student_id = student_id
         self.window = root
         self.window.title("Student Window")
@@ -59,7 +59,8 @@ class StudentWindow:
         update_list_button.grid(row=0, column=2)
 
         confirm_button = tk.Button(page, text="确认操作对象",
-                                   command=lambda: self.student_logic.confirm_object(listbox,mode="enroll_course", confirm_id=confirm_id))
+                                   command=lambda: self.student_logic.confirm_object(listbox, mode="enroll_course",
+                                                                                     confirm_id=confirm_id))
         confirm_button.grid(row=2, column=0, padx=10, pady=10)
 
         confirm_id = tk.StringVar()
@@ -143,7 +144,8 @@ class StudentWindow:
         update_list_button.grid(row=0, column=2)
 
         confirm_button = tk.Button(page, text="确认操作对象",
-                                   command=lambda: self.student_logic.confirm_object(listbox,mode="exit_course", confirm_id=confirm_id))
+                                   command=lambda: self.student_logic.confirm_object(listbox, mode="exit_course",
+                                                                                     confirm_id=confirm_id))
         confirm_button.grid(row=2, column=0, padx=10, pady=10)
 
         confirm_id = tk.StringVar()
@@ -183,7 +185,7 @@ class StudentWindow:
         confirm_button = tk.Button(page, text="确认操作对象",
                                    command=lambda: self.student_logic.confirm_object(listbox, mode="course_center",
                                                                                      confirm_id=confirm_id,
-                                                                                     state = self.STATE,
+                                                                                     state=self.STATE,
                                                                                      submit_assignment_button=submit_assignment_button,
                                                                                      show_grade_button=show_grade_button,
                                                                                      discussion_forum_button=discussion_forum_button))

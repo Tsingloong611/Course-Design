@@ -45,7 +45,7 @@ class AdminWindow:
         list_mode_select.grid(row=1, column=1, padx=10, pady=10)
 
         confirm_button = tk.Button(page, text="确认操作对象", state=STATE[1],
-                                   command=lambda: self.admin_logic.confirm_object(accounts_listbox,mode="accounts",
+                                   command=lambda: self.admin_logic.confirm_object(accounts_listbox, mode="accounts",
                                                                                    add_button=add_button,
                                                                                    accounts_listbox_mode=accounts_listbox_mode,
                                                                                    choose_object=choose_object,
@@ -108,7 +108,8 @@ class AdminWindow:
         # 删除账号按钮
         delete_button = tk.Button(page, text="删除", state=STATE[0],
                                   command=lambda: self.admin_logic.delete_accounts(accounts_listbox_mode.get(),
-                                                                                   confirm_id.get(), add_button=add_button,
+                                                                                   confirm_id.get(),
+                                                                                   add_button=add_button,
                                                                                    listbox=accounts_listbox,
                                                                                    confirm_username=confirm_username,
                                                                                    accounts_listbox_mode=accounts_listbox_mode,
@@ -173,7 +174,8 @@ class AdminWindow:
         listbox.grid(row=0, column=0, padx=10, pady=10)
 
         confirm_button = tk.Button(page, text="确认操作对象",
-                                   command=lambda: self.admin_logic.confirm_object(listbox, mode="configs", confirm_key=confirm_key))
+                                   command=lambda: self.admin_logic.confirm_object(listbox, mode="configs",
+                                                                                   confirm_key=confirm_key))
         confirm_button.grid(row=1, column=0, padx=10, pady=10)
 
         confirm_key_entry = tk.Entry(page, textvariable=confirm_key)
@@ -199,7 +201,7 @@ class AdminWindow:
         n = int(tools().load_config()["week_num"])
         for i in range(n):
             frame = ttk.Frame(notebook)
-            notebook.add(frame, text=f"Week {i+1}")
+            notebook.add(frame, text=f"Week {i + 1}")
 
             for j in range(5):
                 date_label = ttk.Label(frame, text="Monday Tuesday Wednesday Thursday Friday".split()[j])
@@ -250,7 +252,8 @@ class AdminWindow:
         self.admin_logic.update_course_listbox(listbox)
 
         confirm_button = tk.Button(page, text="确认操作对象",
-                                   command=lambda: self.admin_logic.confirm_object(listbox, mode="courses", confirm_id=confirm_id))
+                                   command=lambda: self.admin_logic.confirm_object(listbox, mode="courses",
+                                                                                   confirm_id=confirm_id))
         confirm_button.grid(row=1, column=0, padx=10, pady=10)
 
         confirm_id = tk.StringVar()

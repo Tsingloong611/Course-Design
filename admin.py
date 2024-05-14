@@ -8,6 +8,12 @@ class AdminLogic:
         pass
 
     def update_account_listbox(self, listbox, type):
+        """
+        更新账户列表
+        :param listbox: 列表对象
+        :param type: 账户类型
+        :return:
+        """
         listbox.delete(0, tk.END)
         keys = tools().load_data("statement")["account_attributes"]
         lst = tools().load_data(type)
@@ -25,6 +31,11 @@ class AdminLogic:
         listbox.config(width=max_length)
 
     def update_config_listbox(self, listbox):
+        """
+        更新配置列表
+        :param listbox: 列表对象
+        :return:
+        """
         listbox.delete(0, tk.END)
         keys = tools().load_data("statement")["config_attributes"]
         dict = tools().load_data(path="config.json")
@@ -37,6 +48,11 @@ class AdminLogic:
         listbox.config(width=max_length)
 
     def update_course_listbox(self, listbox):
+        """
+        更新课程列表
+        :param listbox: 列表对象
+        :return:
+        """
         listbox.delete(0, tk.END)
         keys = tools().load_data("statement")["course_attributes"]
         lst = tools().load_data("courses")
@@ -49,16 +65,36 @@ class AdminLogic:
         listbox.config(width=max_length)
 
     def get_object(self, listbox):
+        """
+        获取列表框选中的对象的以空格分隔的字符串的列表
+        :param listbox:
+        :return: 以空格分隔的字符串的列表
+        """
         return str(listbox.get(listbox.curselection())).split()
 
     def add_accounts(self, type, id, username, password, **kwargs):
-        tools().operate_accounts(mode="add",type=type, id=id, username=username, password=password)
+        """
+        添加账户
+        :param type: 账户类型
+        :param id: id
+        :param username: 用户名
+        :param password: 密码
+        :param kwargs: 早期设计的参数，现在已经不再使用，但是为了兼容性保留
+        :return:
+        """
+        tools().operate_accounts(mode="add", type=type, id=id, username=username, password=password)
         self.reoperate(**kwargs)
 
-
     def confirm_object(self, listbox, mode, **kwargs):
+        """
+        确认操作对象
+        :param listbox: 列表框对象
+        :param mode: 模式
+        :param kwargs: 可选参数(待续)
+        :return:
+        """
         STATE = kwargs.get("state", None)
-        if mode =="accounts":
+        if mode == "accounts":
 
             choose_object = kwargs.get("choose_object", None)
 
@@ -122,7 +158,7 @@ class AdminLogic:
 
     def delete_accounts(self, type, id, **kwargs):
         try:
-            tools().operate_accounts(mode="delete",type=type, id=id)
+            tools().operate_accounts(mode="delete", type=type, id=id)
             if type == "teachers":
                 datas = tools().load_data("courses")
                 for data in datas:
@@ -134,8 +170,8 @@ class AdminLogic:
             messagebox.showerror("删除失败", "删除失败")
         self.reoperate(**kwargs)
 
-    def reset_password(self, type, id,new_password, **kwargs):
-        tools().operate_accounts(mode="reset",type=type, id=id, new_password=new_password)
+    def reset_password(self, type, id, new_password, **kwargs):
+        tools().operate_accounts(mode="reset", type=type, id=id, new_password=new_password)
         self.reoperate(**kwargs)
         messagebox.showinfo("重置成功", f"[{type}] {id} 的密码重置为 {new_password}")
 
@@ -230,7 +266,7 @@ class AdminLogic:
             self.register_course(course_data)
 
     def delete_courses(self, id):
-        tools().operate_accounts(mode="delete",type="courses", id=id)
+        tools().operate_accounts(mode="delete", type="courses", id=id)
         datas = tools().load_data("teachers")
         for data in datas:
             courses = data["teaching_courses"]

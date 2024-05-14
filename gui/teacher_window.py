@@ -24,7 +24,6 @@ class TeacherWindow:
         self.course_center_button = tk.Button(self.window, text="课程中心", command=lambda: self.course_center_page())
         self.course_center_button.pack()
 
-
     def show_course_page(self):
         page = tk.Toplevel(self.window)
         page.title("展示课表")
@@ -76,7 +75,7 @@ class TeacherWindow:
         page.title("课程中心")
         page.geometry("1000x1000")
 
-        STATE = ["disabled","normal"]
+        STATE = ["disabled", "normal"]
         term_label = tk.Label(page, text="选择学期:")
         term_label.grid(row=0, column=0)
 
@@ -107,7 +106,7 @@ class TeacherWindow:
 
         confirm_id = tk.StringVar()
         confirm_id.set("待操作课程ID")
-        confirm_id_entry = tk.Entry(page, textvariable=confirm_id,state=STATE[0])
+        confirm_id_entry = tk.Entry(page, textvariable=confirm_id, state=STATE[0])
         confirm_id_entry.grid(row=2, column=1, padx=10, pady=10)
 
         upload_materials_button = tk.Button(page, text="上传资料", state=STATE[0],
@@ -134,7 +133,8 @@ class TeacherWindow:
         listbox_two.grid(row=5, column=0, padx=10, pady=10)
 
         update_list_button = tk.Button(page, text="确定学生",
-                                       command=lambda: self.teacher_logic.confirm_student(listbox_two, confirm_two_id,show_homework_button))
+                                       command=lambda: self.teacher_logic.confirm_student(listbox_two, confirm_two_id,
+                                                                                          show_homework_button))
         update_list_button.grid(row=6, column=2)
 
         grade = tk.StringVar()

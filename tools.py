@@ -10,6 +10,10 @@ class tools:
         pass
 
     def load_config(self):
+        """
+        加载配置文件
+        :return: 返回配置文件的字典
+        """
         if os.path.exists("config.json"):
             with open("config.json", "r") as f:
                 return json.load(f)
@@ -25,6 +29,12 @@ class tools:
                 return configs
 
     def save_config(self, key, value):
+        """
+        保存配置文件
+        :param key: 配置项
+        :param value: 值
+        :return:
+        """
         config = self.load_config()
         try:
             config[key] = value
@@ -73,6 +83,7 @@ class tools:
                     source_file = os.path.join(root, file)
                     backup_file = os.path.join("data_backup", file)
                     shutil.copy2(source_file, backup_file)
+
     def load_data(self, type="all", id="all", path=r"./data/data.json"):
         """
         加载数据
@@ -118,11 +129,25 @@ class tools:
             return self.add_accounts(type, id, username, password)
 
     def delete_accounts(self, type, id):
+        """
+        删除数据
+        :param type: 数据类型
+        :param id: 数据id
+        :return:
+        """
         datas = self.load_data(type)
         new_datas = [data for data in datas if data["id"] != id]
         self.save_data(new_datas, type)
 
     def add_accounts(self, type, id, username, password):
+        """
+        添加数据
+        :param type: 数据类型
+        :param id: 数据id
+        :param username: 用户名
+        :param password: 密码
+        :return:
+        """
         students = {"id": id, "username": username, "password": password,
                     "enrolled_courses": [{"course_id": "0", "grade": "100"}]}
 
@@ -147,6 +172,13 @@ class tools:
             self.save_data(datas, type)
 
     def reset_password(self, type, id, new_password):
+        """
+        重置密码
+        :param type: 数据类型
+        :param id: 数据id
+        :param new_password: 密码
+        :return:
+        """
         datas = self.load_data(type=type)
         for data in datas:
             if data["id"] == id:
@@ -166,16 +198,33 @@ class tools:
             json.dump(datas, f, indent=4)
 
     def check_file(self, path):
+        """
+        检查文件是否存在，不存在则创建
+        :param path: 文件路径
+        :return:
+        """
         if not os.path.exists(path):
             os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, "w") as file:
                 json.dump([], file)
 
     def check_dir(self, path):
+        """
+        检查目录是否存在，不存在则创建
+        :param path: 目录路径
+        :return:
+        """
         if not os.path.exists(path):
             os.makedirs(os.path.dirname(path), exist_ok=True)
 
     def get_info(self, type, id, mode="username"):
+        """
+        获取数据信息
+        :param type: 数据类型
+        :param id: 数据id
+        :param mode: 数据键
+        :return: 返回数据键对应的值(字符串或者列表)
+        """
         obj = self.load_data(type=type, id=id)
         return obj[mode]
 
