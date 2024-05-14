@@ -232,7 +232,6 @@ class StudentLogic:
 
     def show_grade(self, student_id, course_id):
         student = tools().load_data(type="students", id=student_id)
-        print(student)
         for course in student["enrolled_courses"]:
             if course["course_id"] == course_id:
                 student_name = student["username"]

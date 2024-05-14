@@ -40,7 +40,7 @@ class tools:
         :return:
         """
         config = self.load_config()
-        if config["auto_backup"] == True:
+        if config["auto_backup"] != "0":
             self.backup()
             messagebox.showinfo("自动备份", "自动备份以开启，已备份数据")
         else:
@@ -58,11 +58,21 @@ class tools:
             os.makedirs("data_backup")
 
         for root, _, files in os.walk("data"):
-            for file in files:
-                source_file = os.path.join(root, file)
-                backup_file = os.path.join("data_backup", file)
-                shutil.copy2(source_file, backup_file)
+            exclude_dirs = self.load_config()["exclude_dirs"]  # 要排除的目录列表
+            exclude_files = self.load_config()["exclude_files"]  # 要排除的文件列表
 
+            for root, _, files in os.walk("data"):
+                # 检查当前目录是否在排除列表中，如果在则跳过该目录
+                if os.path.basename(root) in exclude_dirs:
+                    continue
+
+                for file in files:
+                    if file in exclude_files:
+                        continue
+
+                    source_file = os.path.join(root, file)
+                    backup_file = os.path.join("data_backup", file)
+                    shutil.copy2(source_file, backup_file)
     def load_data(self, type="all", id="all", path=r"./data/data.json"):
         """
         加载数据
@@ -133,6 +143,7 @@ class tools:
                 datas.append(teachers)
             elif type == "admins":
                 datas.append(admins)
+            messagebox.showinfo("注册成功", f"[{type}] {id} {username} 注册成功")
             self.save_data(datas, type)
 
     def reset_password(self, type, id, new_password):
@@ -203,7 +214,9 @@ class tools:
             "auto_backup": "1",
             "allow_course_conflict": "0",
             "show_password": "0",
-            "week_num": "10"
+            "week_num": "10",
+            "exclude_dirs": ["materials_data"],
+            "exclude_files": []
         }
 
         with open("./data/data.json", "w") as f:

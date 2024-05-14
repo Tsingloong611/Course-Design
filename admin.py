@@ -52,9 +52,9 @@ class AdminLogic:
         return str(listbox.get(listbox.curselection())).split()
 
     def add_accounts(self, type, id, username, password, **kwargs):
-        tools().add_accounts(type, id, username, password)
+        tools().operate_accounts(mode="add",type=type, id=id, username=username, password=password)
         self.reoperate(**kwargs)
-        messagebox.showinfo("注册成功", f"[{type}] {id} {username} 注册成功")
+
 
     def confirm_object(self, listbox, mode, **kwargs):
         STATE = kwargs.get("state", None)
@@ -122,14 +122,20 @@ class AdminLogic:
 
     def delete_accounts(self, type, id, **kwargs):
         try:
-            tools().delete_accounts(type, id)
-            messagebox.showinfo("删除成功", "删除成功")
+            tools().operate_accounts(mode="delete",type=type, id=id)
+            if type == "teachers":
+                datas = tools().load_data("courses")
+                for data in datas:
+                    if data["teacher_id"] == id:
+                        self.delete_courses(data["id"])
+                        messagebox.showinfo("删除成功", f"成功删除教师 {id} 的课程 {data['id']}")
+            messagebox.showinfo("删除成功", f"删除{type} {id} 成功")
         except:
             messagebox.showerror("删除失败", "删除失败")
         self.reoperate(**kwargs)
 
     def reset_password(self, type, id,new_password, **kwargs):
-        tools().reset_password(type, id, new_password)
+        tools().operate_accounts(mode="reset",type=type, id=id, new_password=new_password)
         self.reoperate(**kwargs)
         messagebox.showinfo("重置成功", f"[{type}] {id} 的密码重置为 {new_password}")
 
@@ -164,6 +170,19 @@ class AdminLogic:
 
     def register_course(self, course):
         name = course["name"]
+        teacher_id = course["teacher_id"]
+        id = course["id"]
+        teachers = tools().load_data("teachers")
+        teacher = tools().load_data("teachers", teacher_id)
+
+        teacher["teaching_courses"].append({"course_id": id})
+
+        for i in range(len(teachers)):
+            if teachers[i]["id"] == teacher_id:
+                teachers[i] = teacher
+                break
+        tools().save_data(type="teachers", new_datas=teachers)
+
         datas = tools().load_data("courses")
         datas.append(course)
         tools().save_data(datas, "courses")
@@ -211,4 +230,13 @@ class AdminLogic:
             self.register_course(course_data)
 
     def delete_courses(self, id):
-        tools().delete_accounts(type="courses", id=id)
+        tools().operate_accounts(mode="delete",type="courses", id=id)
+        datas = tools().load_data("teachers")
+        for data in datas:
+            courses = data["teaching_courses"]
+            for course in courses:
+                if course["course_id"] == id:
+                    courses.remove(course)
+                    break
+        tools().save_data(datas, "teachers")
+        messagebox.showinfo("删除成功", f"成功删除课程 {id}")
