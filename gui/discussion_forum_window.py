@@ -1,6 +1,5 @@
 import tkinter as tk
-from forum import DiscussionForumLogic
-from tools import *
+from logic.forum import DiscussionForumLogic
 import json
 
 
@@ -15,7 +14,7 @@ class DiscussionForumWindow:
         self.window.resizable(0, 0)
 
         self.path = f"./data/materials_data/{course_id}/topics.json"
-        tools().check_file(self.path)
+        self.forum_logic.check_file(self.path)
 
         self.topic_label = tk.Label(self.window, text="主题:")
         self.topic_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")

@@ -2,8 +2,7 @@
 import tkinter as tk
 
 from gui.discussion_forum_window import DiscussionForumWindow
-from teacher import TeacherLogic
-from tools import *
+from logic.teacher import TeacherLogic
 
 
 class TeacherWindow:
@@ -43,7 +42,7 @@ class TeacherWindow:
         # 创建周选择下拉菜单
         week_label = tk.Label(page, text="选择周:")
         week_label.grid(row=0, column=2)
-        n = int(tools().load_config()["week_num"])
+        n = self.teacher_logic.get_week_num()
         weeks = [f"Week {i + 1}" for i in range(n)]
         selected_week = tk.StringVar()
         selected_week.set(weeks[0])
@@ -124,8 +123,8 @@ class TeacherWindow:
         discussion_forum_button = tk.Button(page, text="讨论区", state=STATE[0],
                                             command=lambda: DiscussionForumWindow(tk.Toplevel(page),
                                                                                   course_id=confirm_id.get(),
-                                                                                  name=tools().get_info(type="teachers",
-                                                                                                        id=self.teacher_id),
+                                                                                  name=self.teacher_logic.get_name(
+                                                                                      self.teacher_id),
                                                                                   type="Teacher"))
         discussion_forum_button.grid(row=3, column=2, padx=10, pady=10)
 

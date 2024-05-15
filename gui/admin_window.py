@@ -1,8 +1,7 @@
 # @File: admin_window.py
 import tkinter as tk
 from tkinter import messagebox, ttk
-from tools import *
-from admin import AdminLogic
+from logic.admin import AdminLogic
 
 
 class AdminWindow:
@@ -185,7 +184,7 @@ class AdminWindow:
         confirm_value_entry.grid(row=1, column=2, padx=10, pady=10)
 
         change_button = tk.Button(page, text="修改",
-                                  command=lambda: tools().save_config(confirm_key.get(), confirm_value.get()))
+                                  command=lambda: self.admin_logic.change_config(confirm_key.get(), confirm_value.get()))
         change_button.grid(row=2, column=0, padx=10, pady=10)
 
         reoperate_button = tk.Button(page, text="刷新",
@@ -198,7 +197,7 @@ class AdminWindow:
 
         times = [str(item) for item in range(1, 13)]
         checkboxes = {}
-        n = int(tools().load_config()["week_num"])
+        n = self.admin_logic.get_week_num()
         for i in range(n):
             frame = ttk.Frame(notebook)
             notebook.add(frame, text=f"Week {i + 1}")

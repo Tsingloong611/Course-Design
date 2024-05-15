@@ -1,7 +1,7 @@
 # @File: login_window.py
 import tkinter as tk
 from tkinter import messagebox
-from authentication import AuthenticationLogic
+from logic.authentication import AuthenticationLogic
 from gui.admin_window import AdminWindow
 from gui.student_window import StudentWindow
 from gui.teacher_window import TeacherWindow

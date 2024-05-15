@@ -2,7 +2,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from gui.login_window import LoginWindow
-from tools import tools
+from dao.tools import tools
 
 
 class MainWindow:
