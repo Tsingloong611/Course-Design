@@ -31,11 +31,11 @@ if __name__ == "__main__":
     }
     students = [
         {"id": "1", "username": "student_test", "password": "1",
-         "enrolled_courses": [{"course_id": "0", "grade": "100"}]},
+         "enrolled_courses": [{"course_id": "1", "grade": "Not Graded"}]},
     ]
 
     teachers = [
-        {"id": "1", "username": "teacher_test", "password": "1", "teaching_courses": [{"course_id": "0"}]}
+        {"id": "1", "username": "teacher_test", "password": "1", "teaching_courses": [{"course_id": "1"}]}
     ]
 
     admins = [
@@ -45,10 +45,12 @@ if __name__ == "__main__":
     courses = [{
         "id": "1",
         "name": "test_course",
-        "term": "1",
+        "term": "2024 Fall",
         "time": [],
         "teacher_id": "1",
-        "student_ids": []
+        "student_ids": [
+            "1"
+        ]
     }]
 
     accounts = {"statement": statement, "students": students, "teachers": teachers, "admins": admins,

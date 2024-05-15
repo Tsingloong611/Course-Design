@@ -71,11 +71,13 @@ class TeacherLogic:
 
                 upload_materials_button = kwargs.get("upload_materials_button", None)
                 discussion_forum_button = kwargs.get("discussion_forum_button", None)
+                show_material_button = kwargs.get("show_material_button", None)
 
                 confirm_id.set(self.get_object(listbox)[0])
 
                 upload_materials_button.config(state=STATE[1])
                 discussion_forum_button.config(state=STATE[1])
+                show_material_button.config(state=STATE[1])
                 self.update_student_listbox(listbox=listbox_two, course_id=confirm_id.get())
             else:
                 messagebox.showwarning("警告", "请正确选择列表内容作为操作对象!")
@@ -128,3 +130,9 @@ class TeacherLogic:
 
     def get_name(self, teacher_id):
         return tools().get_info(type="teachers", id=teacher_id)["username"]
+
+    def show_materials(self, course_id):
+        directory_path = fr'.\data\materials_data\{course_id}\materials'
+        if not os.path.exists(directory_path):
+            os.makedirs(directory_path)
+        os.startfile(directory_path)

@@ -72,7 +72,6 @@ class tools:
 
         for root, dirs, files in os.walk("./data"):
             if os.path.basename(root) in exclude_dirs:
-                print(f"Skipping directory and all its subdirectories: {root}")
                 dirs[:] = []
                 continue
 
@@ -197,16 +196,19 @@ class tools:
         with open(r"./data/data.json", "w") as f:
             json.dump(datas, f, indent=4)
 
-    def check_file(self, path):
+    def check_file(self, path, mode="create"):
         """
-        检查文件是否存在，不存在则创建
+        检查文件是否存在，不存在则创建（默认）
         :param path: 文件路径
         :return:
         """
-        if not os.path.exists(path):
-            os.makedirs(os.path.dirname(path), exist_ok=True)
-            with open(path, "w") as file:
-                json.dump([], file)
+        if mode == "create":
+            if not os.path.exists(path):
+                os.makedirs(os.path.dirname(path), exist_ok=True)
+                with open(path, "w") as file:
+                    json.dump([], file)
+        elif mode == "check":
+            return os.path.exists(path)
 
     def check_dir(self, path):
         """
@@ -236,11 +238,11 @@ class tools:
         }
         students = [
             {"id": "1", "username": "student_test", "password": "1",
-             "enrolled_courses": [{"course_id": "0", "grade": "Not Graded"}]},
+             "enrolled_courses": [{"course_id": "1", "grade": "Not Graded"}]},
         ]
 
         teachers = [
-            {"id": "1", "username": "teacher_test", "password": "1", "teaching_courses": [{"course_id": "0"}]}
+            {"id": "1", "username": "teacher_test", "password": "1", "teaching_courses": [{"course_id": "1"}]}
         ]
 
         admins = [
@@ -248,12 +250,14 @@ class tools:
         ]
 
         courses = [{
-            "id": "0",
+            "id": "1",
             "name": "test_course",
-            "term": "1",
+            "term": "2024 Fall",
             "time": [],
             "teacher_id": "1",
-            "student_ids": []
+            "student_ids": [
+                "1"
+            ]
         }]
 
         accounts = {"statement": statement, "students": students, "teachers": teachers, "admins": admins,

@@ -18,7 +18,11 @@ class MainWindow:
         initialize_button.pack()
 
     def auth(self):
-        LoginWindow(tk.Toplevel(self.window))
+        if tools().check_file(r"./data/data.json", mode="check"):
+            LoginWindow(tk.Toplevel(self.window))
+        else:
+            messagebox.showerror("错误", "数据文件不存在，请先进行激活/恢复出厂模式")
+            self.initialize()
 
     def initialize(self):
         window = tk.Tk()

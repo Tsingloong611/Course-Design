@@ -37,7 +37,7 @@ class StudentWindow:
         term_label = tk.Label(page, text="选择学期:")
         term_label.grid(row=0, column=0)
 
-        terms = ["2024 Fall", "1"]
+        terms = ["2024 Fall", "2024 Winter"]
         selected_term = tk.StringVar()
         selected_term.set(terms[0])
 
@@ -100,7 +100,7 @@ class StudentWindow:
         term_label = tk.Label(page, text="选择学期:")
         term_label.grid(row=0, column=0)
 
-        terms = ["2024 Fall", "1"]
+        terms = ["2024 Fall", "2024 Winter"]
         selected_term = tk.StringVar()
         selected_term.set(terms[0])
 
@@ -124,7 +124,7 @@ class StudentWindow:
         term_label = tk.Label(page, text="选择学期:")
         term_label.grid(row=0, column=0)
 
-        terms = ["1", "2024 Fall"]
+        terms = ["2024 Fall", "2024 Winter"]
         selected_term = tk.StringVar()
         selected_term.set(terms[0])
 
@@ -163,7 +163,7 @@ class StudentWindow:
         term_label = tk.Label(page, text="选择学期:")
         term_label.grid(row=0, column=0)
 
-        terms = ["1", "2024 Fall"]
+        terms = ["2024 Fall", "2024 Winter"]
         selected_term = tk.StringVar()
         selected_term.set(terms[0])
 
@@ -186,13 +186,19 @@ class StudentWindow:
                                                                                      state=self.STATE,
                                                                                      submit_assignment_button=submit_assignment_button,
                                                                                      show_grade_button=show_grade_button,
-                                                                                     discussion_forum_button=discussion_forum_button))
+                                                                                     discussion_forum_button=discussion_forum_button,
+                                                                                     show_material_button=show_material_button))
         confirm_button.grid(row=2, column=0, padx=10, pady=10)
 
         confirm_id = tk.StringVar()
         confirm_id.set("待操作对象ID")
         confirm_id_entry = tk.Entry(page, textvariable=confirm_id, state=self.STATE[0])
         confirm_id_entry.grid(row=2, column=1, padx=10, pady=10)
+
+
+        show_material_button = tk.Button(page, text="查看资料", state=self.STATE[0],
+                                        command=lambda: self.student_logic.show_materials(course_id=confirm_id.get()))
+        show_material_button.grid(row=2, column=2, padx=10, pady=10)
 
         submit_assignment_button = tk.Button(page, text="提交作业", state=self.STATE[0],
                                              command=lambda: self.student_logic.submit_assignment(self.student_id,
@@ -223,7 +229,7 @@ class StudentWindow:
         term_label = tk.Label(page, text="选择学期:")
         term_label.grid(row=0, column=0)
 
-        terms = ["1", "2024 Fall"]
+        terms = ["2024 Fall", "2024 Winter"]
         selected_term = tk.StringVar()
         selected_term.set(terms[0])
 
