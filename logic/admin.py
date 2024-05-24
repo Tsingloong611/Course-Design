@@ -1,5 +1,6 @@
 # @File: admin.py
 import tkinter as tk
+from tkinter import messagebox
 from dao.tools import *
 
 
@@ -15,7 +16,7 @@ class AdminLogic:
         :return:
         """
         listbox.delete(0, tk.END)
-        keys = tools().load_data("statement")["account_attributes"]
+        keys = tools().load_data("statements")["account_attributes"]
         lst = tools().load_data(type)
         statement_str = "".join("{:<20}".format(key) for key in keys)
         listbox.insert(0, statement_str)
@@ -37,7 +38,7 @@ class AdminLogic:
         :return:
         """
         listbox.delete(0, tk.END)
-        keys = tools().load_data("statement")["config_attributes"]
+        keys = tools().load_data("statements")["config_attributes"]
         dict = tools().load_data(path="config.json")
         statement_str = "".join("{:<20}".format(key) for key in keys)
         listbox.insert(0, statement_str)
@@ -54,7 +55,7 @@ class AdminLogic:
         :return:
         """
         listbox.delete(0, tk.END)
-        keys = tools().load_data("statement")["course_attributes"]
+        keys = tools().load_data("statements")["course_attributes"]
         lst = tools().load_data("courses")
         statement_str = "".join("{:<20}".format(key) for key in keys)
         listbox.insert(0, statement_str)
@@ -108,31 +109,33 @@ class AdminLogic:
             add_button = kwargs.get("add_button", None)
             delete_button = kwargs.get("delete_button", None)
             reset_button = kwargs.get("reset_button", None)
+            button_normal_style = kwargs.get("button_normal_style", None)
+            button_disabled_style = kwargs.get("button_disabled_style", None)
 
             if accounts_listbox_mode.get() != "选择操作对象类型":
                 if confirm_id.get() == "待操作对象ID":
                     if listbox.curselection():
                         if self.get_object(listbox)[0] not in ["id", "key"]:
-                            confirm_id_entry.config(state=STATE[0])
+                            confirm_id_entry.config(state=STATE[0], **button_disabled_style)
                             confirm_id.set(self.get_object(listbox)[0])
                             choose_object.set(accounts_listbox_mode.get())
 
-                            confirm_button.config(state=STATE[0])
-                            delete_button.config(state=STATE[1])
-                            reset_button.config(state=STATE[1])
+                            confirm_button.config(state=STATE[0], **button_disabled_style)
+                            delete_button.config(state=STATE[1], **button_normal_style)
+                            reset_button.config(state=STATE[1], **button_normal_style)
                         else:
                             messagebox.showwarning("警告", "请正确选择列表内容作为操作对象!")
                     else:
                         messagebox.showwarning("警告", "请从列表选取对象或者手动指定对象ID")
 
                 elif confirm_id.get() != "待操作对象ID":
-                    add_button.config(state=STATE[1])
+                    add_button.config(state=STATE[1], **button_normal_style)
                     confirm_id_entry.config(state=STATE[0])
                     confirm_username_entry.config(state=STATE[1])
                     confirm_id.set(confirm_id.get())
                     choose_object.set(accounts_listbox_mode.get())
 
-                    confirm_button.config(state=STATE[0])
+                    confirm_button.config(state=STATE[0], **button_disabled_style)
             else:
                 messagebox.showwarning("警告", "请选择操作对象类型!")
 
@@ -157,6 +160,13 @@ class AdminLogic:
                 messagebox.showwarning("警告", "请选择操作对象!")
 
     def delete_accounts(self, type, id, **kwargs):
+        """
+        删除账户
+        :param type: 类型
+        :param id: 用户id
+        :param kwargs: 组件参数
+        :return:
+        """
         try:
             tools().operate_accounts(mode="delete", type=type, id=id)
             if type == "teachers":
@@ -171,11 +181,24 @@ class AdminLogic:
         self.reoperate(**kwargs)
 
     def reset_password(self, type, id, new_password, **kwargs):
+        """
+        重置密码
+        :param type: 类型
+        :param id: 用户id
+        :param new_password: 新密码
+        :param kwargs: 组件参数
+        :return:
+        """
         tools().operate_accounts(mode="reset", type=type, id=id, new_password=new_password)
         self.reoperate(**kwargs)
         messagebox.showinfo("重置成功", f"[{type}] {id} 的密码重置为 {new_password}")
 
     def reoperate(self, **kwargs):
+        """
+        重新操作
+        :param kwargs: 复原组件参数
+        :return:
+        """
         STATE = kwargs.get("state", None)
         listbox = kwargs.get("listbox", None)
 
@@ -190,6 +213,8 @@ class AdminLogic:
         add_button = kwargs.get("add_button", None)
         delete_button = kwargs.get("delete_button", None)
         reset_button = kwargs.get("reset_button", None)
+        button_normal_style = kwargs.get("button_normal_style")
+        button_disabled_style = kwargs.get("button_disabled_style")
 
         accounts_listbox_mode.set("选择操作对象类型")
         choose_object.set("选择操作对象类型")
@@ -198,33 +223,56 @@ class AdminLogic:
         confirm_password.set("新密码")
         confirm_username.set("用户名")
         confirm_username_entry.config(state=STATE[0])
-        add_button.config(state=STATE[0])
-        confirm_button.config(state=STATE[1])
+        add_button.config(state=STATE[0], **button_disabled_style)
+        confirm_button.config(state=STATE[1], **button_normal_style)
         confirm_id_entry.config(state=STATE[1])
-        delete_button.config(state=STATE[0])
-        reset_button.config(state=STATE[0])
+        delete_button.config(state=STATE[0], **button_disabled_style)
+        reset_button.config(state=STATE[0], **button_disabled_style)
 
     def register_course(self, course):
+        """
+        注册课程
+        :param course: 课程的相关信息
+        :return:
+        """
         name = course["name"]
         teacher_id = course["teacher_id"]
         id = course["id"]
+        new_term = course["term"]
+
+        # 在教师数据中添加教师的教授课程
         teachers = tools().load_data("teachers")
         teacher = tools().load_data("teachers", teacher_id)
-
         teacher["teaching_courses"].append({"course_id": id})
-
         for i in range(len(teachers)):
             if teachers[i]["id"] == teacher_id:
                 teachers[i] = teacher
                 break
         tools().save_data(type="teachers", new_datas=teachers)
 
-        datas = tools().load_data("courses")
-        datas.append(course)
-        tools().save_data(datas, "courses")
+        # 在课程数据中添加课程
+        course_datas = tools().load_data("courses")
+        course_datas.append(course)
+        tools().save_data(course_datas, "courses")
+
+        # 在学期数据中添加学期
+        statements_datas = tools().load_data("statements")
+        if new_term not in statements_datas["term_names"]:
+            statements_datas["term_names"].append(new_term)
+        tools().save_data(statements_datas, "statements")
+
         messagebox.showinfo("注册成功", f"课程{name}注册成功")
 
     def confirm_register_course(self, checkboxes, id, name, term, teacher_id):
+        """
+        确认注册课程，检查课程信息是否完整
+        :param checkboxes: 时间信息
+        :param id: 课程id
+        :param name: 课程名
+        :param term: 课程学期
+        :param teacher_id: 授课教师id
+        :return:
+        """
         if id == "" or name == "" or term == "" or teacher_id == "":
             messagebox.showerror("错误", "请填写完整信息")
             return
@@ -246,7 +294,6 @@ class AdminLogic:
                 "teacher_id": teacher_id,
                 "student_ids": []
             }
-
             for key, var in checkboxes.items():
                 if var.get() == 1:
                     week, day, time = key.split()
@@ -266,7 +313,25 @@ class AdminLogic:
             self.register_course(course_data)
 
     def delete_courses(self, id):
+        """
+        删除课程
+        :param id: 课程id
+        :return:
+        """
+        # 判断是否删除对应学期
+        term = tools().load_data("courses", id)["term"]
+        a = 0
+        for course in tools().load_data("courses"):
+            if course["term"] == term:
+                a = 1
+                break
+        if a == 0:
+            statements_datas = tools().load_data("statements")
+            statements_datas["term_names"].remove(term)
+            tools().save_data(statements_datas, "statements")
+        # 删除课程
         tools().operate_accounts(mode="delete", type="courses", id=id)
+        # 删除教师数据中的教授课程
         datas = tools().load_data("teachers")
         for data in datas:
             courses = data["teaching_courses"]
@@ -278,7 +343,34 @@ class AdminLogic:
         messagebox.showinfo("删除成功", f"成功删除课程 {id}")
 
     def change_config(self, confirm_key, confirm_value):
+        """
+        修改配置
+        :param confirm_key: 键
+        :param confirm_value: 值
+        :return:
+        """
         return tools().save_config(confirm_key, confirm_value)
 
     def get_week_num(self):
+        """
+        获取周数
+        :return: int类型的周数
+        """
         return int(tools().load_config()["week_num"])
+
+
+    def confirm_init(self, code):
+        """
+        确认初始化数据
+        :param code: 确认码
+        :return:
+        """
+        if code == "123456":
+            ask = tk.messagebox.askyesno("确认", "确认初始化数据,这将覆盖所有数据")
+            if ask:
+                tools().initialize()
+                tk.messagebox.showinfo("成功", "操作成功")
+            else:
+                tk.messagebox.showinfo("取消", "操作已取消")
+        else:
+            tk.messagebox.showerror("错误", "确认码错误,拒绝操作")

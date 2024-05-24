@@ -4,7 +4,14 @@ import json
 
 
 class DiscussionForumWindow:
-    def __init__(self, root, course_id="3", name="student1", type="student"):
+    def __init__(self, root, course_id, name, type):
+        """
+        初始化讨论区窗口
+        :param root: 窗口
+        :param course_id: 课程id
+        :param name: 用户名
+        :param type: 用户类型
+        """
         self.name = name
         self.type = type
         self.forum_logic = DiscussionForumLogic()
@@ -52,6 +59,11 @@ class DiscussionForumWindow:
         self.forum_logic.load_topics(path=self.path, topic_listbox=self.topic_listbox)
 
     def show_selected_topic(self, event):
+        """
+        显示选中的主题
+        :param event: 点击事件
+        :return:
+        """
         index = self.topic_listbox.curselection()[0]
 
         with open(self.path, "r") as file:
@@ -62,9 +74,3 @@ class DiscussionForumWindow:
 
             self.content_text.delete("1.0", tk.END)
             self.content_text.insert(tk.END, content)
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = DiscussionForumWindow(root)
-    root.mainloop()

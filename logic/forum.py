@@ -6,9 +6,17 @@ from dao.tools import tools
 
 class DiscussionForumLogic:
     def __init__(self):
+        """
+        初始化话题
+        """
         self.topics = []
 
     def post(self, **kwargs):
+        """
+        发布话题
+        :param kwargs: 参数
+        :return:
+        """
         self.poster = kwargs.get("poster")
         self.topic_entry = kwargs.get("topic_entry")
         self.write_content_text = kwargs.get("write_content_text")
@@ -24,6 +32,12 @@ class DiscussionForumLogic:
         self.load_topics(path=self.path, topic_listbox=self.topic_listbox)
 
     def load_topics(self, path, topic_listbox):
+        """
+        加载话题
+        :param path: 路径
+        :param topic_listbox: 列表框
+        :return:
+        """
         self.path = path
         self.topic_listbox = topic_listbox
         self.topic_listbox.delete(0, tk.END)
@@ -36,4 +50,9 @@ class DiscussionForumLogic:
                 self.topic_listbox.insert(tk.END, topic)
 
     def check_file(self, path):
+        """
+        检查文件是否存在,不存在则创建
+        :param path: 路径
+        :return:
+        """
         tools().check_file(path)

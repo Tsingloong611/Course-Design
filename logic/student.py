@@ -106,8 +106,16 @@ class StudentLogic:
             return True
 
     def update_course_listbox(self, listbox, student_id, term, mode):
+        """
+        更新课程列表框
+        :param listbox: 列表框
+        :param student_id: 用户id
+        :param term: 学期
+        :param mode: 模式
+        :return:
+        """
         listbox.delete(0, tk.END)
-        keys = tools().load_data("statement")["course_attributes"]
+        keys = tools().load_data("statements")["course_attributes"]
 
         if term != "all":
             courses = [course for course in tools().load_data("courses") if course["term"] == term]
@@ -155,6 +163,13 @@ class StudentLogic:
         listbox.config(width=max_length)
 
     def confirm_object(self, listbox, mode, **kwargs):
+        """
+        确认操作对象
+        :param listbox: 列表框
+        :param mode: 模式
+        :param kwargs: 组件状态参数
+        :return:
+        """
         STATE = kwargs.get("state", None)
         if mode == "course_center":
             confirm_id = kwargs.get("confirm_id", None)
@@ -162,14 +177,16 @@ class StudentLogic:
             show_grade_button = kwargs.get("show_grade_button", None)
             discussion_forum_button = kwargs.get("discussion_forum_button", None)
             show_material_button = kwargs.get("show_material_button", None)
+            button_normal_style = kwargs.get("button_normal_style", None)
+            button_disabled_style = kwargs.get("button_disabled_style", None)
             if confirm_id.get() == "待操作对象ID":
                 if listbox.curselection():
                     if self.get_object(listbox)[0] not in ["id"]:
                         confirm_id.set(self.get_object(listbox)[0])
-                        submit_assignment_button.config(state=STATE[1])
-                        show_grade_button.config(state=STATE[1])
-                        discussion_forum_button.config(state=STATE[1])
-                        show_material_button.config(state=STATE[1])
+                        submit_assignment_button.config(state=STATE[1], **button_normal_style)
+                        show_grade_button.config(state=STATE[1], **button_normal_style)
+                        discussion_forum_button.config(state=STATE[1], **button_normal_style)
+                        show_material_button.config(state=STATE[1], **button_normal_style)
                     else:
                         messagebox.showwarning("警告", "请正确选择列表内容作为操作对象!")
                 else:
@@ -177,9 +194,10 @@ class StudentLogic:
             elif confirm_id.get() != "待操作对象ID" and listbox.curselection():
                 if self.get_object(listbox)[0] not in ["id"]:
                     confirm_id.set(self.get_object(listbox)[0])
-                    submit_assignment_button.config(state=STATE[1])
-                    show_grade_button.config(state=STATE[1])
-                    discussion_forum_button.config(state=STATE[1])
+                    submit_assignment_button.config(state=STATE[1], **button_normal_style)
+                    show_grade_button.config(state=STATE[1], **button_normal_style)
+                    show_material_button.config(state=STATE[1], **button_normal_style)
+                    discussion_forum_button.config(state=STATE[1], **button_normal_style)
                 else:
                     messagebox.showwarning("警告", "请正确选择列表内容作为操作对象!")
 
@@ -202,9 +220,23 @@ class StudentLogic:
                     messagebox.showwarning("警告", "请正确选择列表内容作为操作对象!")
 
     def get_object(self, listbox):
+        """
+        获取列表框选中对象的字符串分割后的列表
+        :param listbox: 列表框
+        :return:
+        """
         return str(listbox.get(listbox.curselection())).split()
 
     def update_course_schedule(self, student_id, selected_term, selected_week, labels, page):
+        """
+        更新课程表
+        :param student_id: 用户id
+        :param selected_term: 学期
+        :param selected_week: 周
+        :param labels: 标签
+        :param page: 页面
+        :return:
+        """
         courses = [course for course in tools().load_data(type="courses") if student_id in course["student_ids"]]
         selected_week = selected_week.get().split()[1]
         selected_term = selected_term.get()
@@ -218,7 +250,8 @@ class StudentLogic:
                     week = int(class_time["week"])
                     day = int(class_time["day"])
                     times = class_time["time"]
-                    course_info = f"{course['name']}\nTeacher: {course['teacher_id']}"
+                    teacher_name = tools().get_info(type="teachers", id=course["teacher_id"])
+                    course_info = f"{course['name']}\nTeacher: {teacher_name}"
                     for time in times:
                         if week == int(selected_week):
                             label = tk.Label(page, text=course_info, borderwidth=1, relief="solid", padx=10, pady=5)
@@ -226,6 +259,12 @@ class StudentLogic:
                             labels.append(label)
 
     def submit_assignment(self, student_id, course_id):
+        """
+        提交作业
+        :param student_id: 用户id
+        :param course_id: 课程id
+        :return:
+        """
         assignment_path = filedialog.askopenfilename()
         directory = rf"./data/materials_data/{course_id}/homeworks/{student_id}/"
         tools().check_dir(directory)
@@ -233,21 +272,49 @@ class StudentLogic:
         messagebox.showinfo("上传", f"已将{assignment_path}上传至{directory}")
 
     def show_grade(self, student_id, course_id):
+        """
+        显示成绩
+        :param student_id: 用户id
+        :param course_id: 课程id
+        :return:
+        """
         student = tools().load_data(type="students", id=student_id)
         for course in student["enrolled_courses"]:
             if course["course_id"] == course_id:
                 student_name = student["username"]
                 student_grade = course["grade"]
-                messagebox.showinfo("查询结果", f"{student_name}的课程{course_id}的成绩是{student_grade}")
+                course_name = tools().get_info("courses", course_id, "name")
+                messagebox.showinfo("查询结果", f"{student_name} 的课程 {course_name} 的成绩是：{student_grade}")
 
     def get_week_num(self):
+        """
+        获取周数
+        :return: int类型的周数
+        """
         return int(tools().load_config()["week_num"])
 
     def get_name(self, student_id):
+        """
+        获取用户名
+        :param student_id:
+        :return: str类型的用户名
+        """
         return tools().get_info(type="students", id=student_id, mode="username")
 
     def show_materials(self, course_id):
+        """
+        显示课程资料
+        :param course_id: 课程id
+        :return: 调用任务资源管理器打开课程资料文件夹
+        """
         directory_path = fr'.\data\materials_data\{course_id}\materials'
         if not os.path.exists(directory_path):
             os.makedirs(directory_path)
         os.startfile(directory_path)
+
+    def get_terms(self):
+        """
+        获取学期名
+        :return: 列表类型的学期名
+        """
+        return tools().load_data("statements")["term_names"]

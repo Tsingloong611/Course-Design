@@ -6,30 +6,42 @@ from logic.admin import AdminLogic
 
 class AdminWindow:
     def __init__(self, root):
+        """
+        管理员界面
+        :param root: 窗口
+        """
         self.admin_logic = AdminLogic()
         self.window = root
         self.window.title("管理员界面")
-        self.window.geometry("400x400")
+        self.window.geometry("300x300")
         self.window.resizable(0, 0)
-        # 创建按钮
-        self.operate_accounts_button = tk.Button(self.window, text="管理账户", command=self.operate_accounts)
-        self.operate_accounts_button.pack()
+        self.window.configure(bg="#f0f0f0")
 
-        self.operate_config_button = tk.Button(self.window, text="管理配置文件", command=self.operate_config)
-        self.operate_config_button.pack()
+        buttons = [
+            ("管理账户", self.operate_accounts),
+            ("管理配置文件", self.operate_config),
+            ("开通课程", self.register_courses),
+            ("删除课程", self.delete_courses),
+            ("初始化数据", self.initialize_page)
+        ]
 
-        self.register_course_button = tk.Button(self.window, text="开通课程", command=self.register_courses)
-        self.register_course_button.pack()
-
-        self.delete_course_button = tk.Button(self.window, text="删除课程", command=self.delete_courses)
-        self.delete_course_button.pack()
+        for text, command in buttons:
+            button = tk.Button(self.window, text=text, command=command, bg="#3498db", fg="white", font=("Roboto", 12),
+                               relief=tk.RAISED)
+            button.pack(pady=10, padx=10, ipadx=10, ipady=5)
 
     def operate_accounts(self):
+        """
+        管理账户界面
+        :return:
+        """
         page = tk.Toplevel(self.window)
         page.title("管理账户")
         page.geometry("1000x600")
 
         # 常变量区
+        button_normal_style = {"font": ("Arial", 12), "bg": "#3498db", "fg": "white", "relief": tk.RAISED}
+        button_disabled_style = {"font": ("Arial", 12), "bg": "#bdc3c7", "fg": "#7f8c8d", "relief": tk.FLAT}
         STATE = ("disabled", "normal")
 
         # 账户可视化区
@@ -43,7 +55,7 @@ class AdminWindow:
                                                                                                    accounts_listbox_mode.get()))
         list_mode_select.grid(row=1, column=1, padx=10, pady=10)
 
-        confirm_button = tk.Button(page, text="确认操作对象", state=STATE[1],
+        confirm_button = tk.Button(page, text="确认操作对象", state=STATE[1], **button_normal_style,
                                    command=lambda: self.admin_logic.confirm_object(accounts_listbox, mode="accounts",
                                                                                    add_button=add_button,
                                                                                    accounts_listbox_mode=accounts_listbox_mode,
@@ -54,7 +66,10 @@ class AdminWindow:
                                                                                    delete_button=delete_button,
                                                                                    reset_button=reset_button,
                                                                                    confirm_id_entry=confirm_id_entry,
-                                                                                   confirm_username_entry=confirm_username_entry))
+                                                                                   confirm_username_entry=confirm_username_entry,
+                                                                                   button_normal_style=button_normal_style,
+                                                                                   button_disabled_style=button_disabled_style
+                                                                                   ))
 
         confirm_button.grid(row=2, column=1, padx=10, pady=10)
 
@@ -83,7 +98,7 @@ class AdminWindow:
         confirm_password_entry.grid(row=3, column=0, padx=10, pady=10)
 
         # 添加账号按钮
-        add_button = tk.Button(page, text="添加", state=STATE[0],
+        add_button = tk.Button(page, text="添加", state=STATE[0], **button_disabled_style,
                                command=lambda: self.admin_logic.add_accounts(accounts_listbox_mode.get(),
                                                                              confirm_id.get(),
                                                                              confirm_username.get(),
@@ -100,12 +115,14 @@ class AdminWindow:
                                                                              delete_button=delete_button,
                                                                              reset_button=reset_button,
                                                                              confirm_id_entry=confirm_id_entry,
-                                                                             confirm_username_entry=confirm_username_entry
+                                                                             confirm_username_entry=confirm_username_entry,
+                                                                             button_normal_style=button_normal_style,
+                                                                             button_disabled_style=button_disabled_style
                                                                              ))
         add_button.grid(row=7, column=0, padx=10, pady=10)
 
         # 删除账号按钮
-        delete_button = tk.Button(page, text="删除", state=STATE[0],
+        delete_button = tk.Button(page, text="删除", state=STATE[0], **button_disabled_style,
                                   command=lambda: self.admin_logic.delete_accounts(accounts_listbox_mode.get(),
                                                                                    confirm_id.get(),
                                                                                    add_button=add_button,
@@ -120,11 +137,14 @@ class AdminWindow:
                                                                                    delete_button=delete_button,
                                                                                    reset_button=reset_button,
                                                                                    confirm_id_entry=confirm_id_entry,
-                                                                                   confirm_username_entry=confirm_username_entry))
+                                                                                   confirm_username_entry=confirm_username_entry,
+                                                                                   button_normal_style=button_normal_style,
+                                                                                   button_disabled_style=button_disabled_style
+                                                                                   ))
         delete_button.grid(row=4, column=0, padx=10, pady=10)
 
         # 修改密码按钮
-        reset_button = tk.Button(page, text="重置密码", state=STATE[0],
+        reset_button = tk.Button(page, text="重置密码", state=STATE[0], **button_disabled_style,
                                  command=lambda: self.admin_logic.reset_password(accounts_listbox_mode.get(),
                                                                                  confirm_id.get(),
                                                                                  confirm_password.get(),
@@ -140,11 +160,14 @@ class AdminWindow:
                                                                                  delete_button=delete_button,
                                                                                  reset_button=reset_button,
                                                                                  confirm_id_entry=confirm_id_entry,
-                                                                                 confirm_username_entry=confirm_username_entry))
+                                                                                 confirm_username_entry=confirm_username_entry,
+                                                                                 button_normal_style=button_normal_style,
+                                                                                 button_disabled_style=button_disabled_style
+                                                                                 ))
         reset_button.grid(row=5, column=0, padx=10, pady=10)
 
         # 重新操作按钮
-        reoperate_button = tk.Button(page, text="重新操作",
+        reoperate_button = tk.Button(page, text="重新操作",  **button_normal_style,
                                      command=lambda: self.admin_logic.reoperate(add_button=add_button,
                                                                                 listbox=accounts_listbox,
                                                                                 confirm_username=confirm_username,
@@ -157,13 +180,21 @@ class AdminWindow:
                                                                                 delete_button=delete_button,
                                                                                 reset_button=reset_button,
                                                                                 confirm_id_entry=confirm_id_entry,
-                                                                                confirm_username_entry=confirm_username_entry))
+                                                                                confirm_username_entry=confirm_username_entry,
+                                                                                button_normal_style=button_normal_style,
+                                                                                button_disabled_style=button_disabled_style))
         reoperate_button.grid(row=6, column=0, padx=10, pady=10)
 
     def operate_config(self):
+        """
+        管理配置文件界面
+        :return:
+        """
         page = tk.Toplevel(self.window)
         page.title("管理配置文件")
         page.geometry("1000x600")
+
+        button_style = {"font": ("Arial", 12), "bg": "#3498db", "fg": "white", "relief": tk.RAISED}
 
         confirm_key = tk.StringVar()
         confirm_key.set("待操作对象ID")
@@ -172,7 +203,7 @@ class AdminWindow:
         listbox = tk.Listbox(page)
         listbox.grid(row=0, column=0, padx=10, pady=10)
 
-        confirm_button = tk.Button(page, text="确认操作对象",
+        confirm_button = tk.Button(page, text="确认操作对象", **button_style,
                                    command=lambda: self.admin_logic.confirm_object(listbox, mode="configs",
                                                                                    confirm_key=confirm_key))
         confirm_button.grid(row=1, column=0, padx=10, pady=10)
@@ -183,16 +214,22 @@ class AdminWindow:
         confirm_value_entry = tk.Entry(page, textvariable=confirm_value)
         confirm_value_entry.grid(row=1, column=2, padx=10, pady=10)
 
-        change_button = tk.Button(page, text="修改",
-                                  command=lambda: self.admin_logic.change_config(confirm_key.get(), confirm_value.get()))
+        change_button = tk.Button(page, text="修改", **button_style,
+                                  command=lambda: self.admin_logic.change_config(confirm_key.get(),
+                                                                                 confirm_value.get()))
         change_button.grid(row=2, column=0, padx=10, pady=10)
 
-        reoperate_button = tk.Button(page, text="刷新",
+        reoperate_button = tk.Button(page, text="刷新", **button_style,
                                      command=lambda: self.admin_logic.update_config_listbox(listbox))
         reoperate_button.grid(row=6, column=0, padx=10, pady=10)
 
     def register_courses(self):
+        """
+        开通课程界面
+        :return:
+        """
         page = tk.Toplevel(self.window)
+        page.title("开通课程")
         notebook = ttk.Notebook(page)
 
         times = [str(item) for item in range(1, 13)]
@@ -241,16 +278,22 @@ class AdminWindow:
         btn.pack()
 
     def delete_courses(self):
+        """
+        删除课程界面
+        :return:
+        """
         page = tk.Toplevel(self.window)
         page.title("删除课程")
         page.geometry("1000x600")
+
+        button_style = {"font": ("Arial", 12), "bg": "#3498db", "fg": "white", "relief": tk.RAISED}
 
         listbox = tk.Listbox(page)
         listbox.grid(row=0, column=0, padx=10, pady=10)
 
         self.admin_logic.update_course_listbox(listbox)
 
-        confirm_button = tk.Button(page, text="确认操作对象",
+        confirm_button = tk.Button(page, text="确认操作对象", **button_style,
                                    command=lambda: self.admin_logic.confirm_object(listbox, mode="courses",
                                                                                    confirm_id=confirm_id))
         confirm_button.grid(row=1, column=0, padx=10, pady=10)
@@ -260,12 +303,23 @@ class AdminWindow:
         confirm_id_entry = tk.Entry(page, textvariable=confirm_id)
         confirm_id_entry.grid(row=1, column=1, padx=10, pady=10)
 
-        delete_button = tk.Button(page, text="删除",
+        delete_button = tk.Button(page, text="删除", **button_style,
                                   command=lambda: self.admin_logic.delete_courses(confirm_id.get()))
         delete_button.grid(row=2, column=0, padx=10, pady=10)
 
+    def initialize_page(self):
+        """
+        初始化数据界面
+        :return:
+        """
+        page = tk.Toplevel(self.window)
+        page.title("初始化数据")
+        page.geometry("400x100")
+        page.resizable(0, 0)
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    admin_window = AdminWindow(root)
-    root.mainloop()
+        code_label = tk.Label(page, text="请输入确认码")
+        code_label.pack()
+        code_entry = tk.Entry(page)
+        code_entry.pack()
+        confirm_button = tk.Button(page, text="确认", command=lambda: self.admin_logic.confirm_init(code_entry.get()))
+        confirm_button.pack()

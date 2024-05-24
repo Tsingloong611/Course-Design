@@ -112,7 +112,7 @@ class tools:
         :param type: 数据类型
         :param id: 数据id
         :param **kwargs: 其他可能参数
-        :return: 对应的操作结果
+        :return: 对应的操作
         """
         self.auto_backup()
         if mode == "delete":
@@ -231,46 +231,213 @@ class tools:
         return obj[mode]
 
     def initialize(self):
-        statement = {
+        """
+        初始化数据
+        :return:
+        """
+        statements = {
             "account_attributes": ["id", "username", "password"],
             "config_attributes": ["key", "value"],
             "course_attributes": ["id", "name", "term", "teacher_id"],
+            "term_names": ["2024 Spring", "2024 Summer", "2024 Fall", "2024 Winter"]
         }
         students = [
-            {"id": "1", "username": "student_test", "password": "1",
+            {"id": "23120001", "username": "William", "password": "123456",
              "enrolled_courses": [{"course_id": "1", "grade": "Not Graded"}]},
         ]
 
         teachers = [
-            {"id": "1", "username": "teacher_test", "password": "1", "teaching_courses": [{"course_id": "1"}]}
+            {"id": "10001111", "username": "Julian", "password": "123456", "teaching_courses": [{"course_id": "1"}]}
         ]
 
         admins = [
-            {"id": "1", "username": "admin_test", "password": "1"}
+            {"id": "0", "username": "admin_test", "password": "123456"}
         ]
 
         courses = [{
             "id": "1",
-            "name": "test_course",
-            "term": "2024 Fall",
-            "time": [],
-            "teacher_id": "1",
+            "name": "AE4.2",
+            "term": "2024 Spring",
+            "time": [
+                {
+                    "week": "1",
+                    "day": "1",
+                    "time": [
+                        "1",
+                        "2"
+                    ]
+                },
+                {
+                    "week": "1",
+                    "day": "2",
+                    "time": [
+                        "3",
+                        "4"
+                    ]
+                },
+                {
+                    "week": "2",
+                    "day": "1",
+                    "time": [
+                        "1",
+                        "2"
+                    ]
+                },
+                {
+                    "week": "2",
+                    "day": "2",
+                    "time": [
+                        "3",
+                        "4"
+                    ]
+                },
+                {
+                    "week": "3",
+                    "day": "1",
+                    "time": [
+                        "1",
+                        "2"
+                    ]
+                },
+                {
+                    "week": "3",
+                    "day": "2",
+                    "time": [
+                        "3",
+                        "4"
+                    ]
+                },
+                {
+                    "week": "4",
+                    "day": "1",
+                    "time": [
+                        "1",
+                        "2"
+                    ]
+                },
+                {
+                    "week": "4",
+                    "day": "2",
+                    "time": [
+                        "3",
+                        "4"
+                    ]
+                },
+                {
+                    "week": "5",
+                    "day": "1",
+                    "time": [
+                        "1",
+                        "2"
+                    ]
+                },
+                {
+                    "week": "5",
+                    "day": "2",
+                    "time": [
+                        "3",
+                        "4"
+                    ]
+                },
+                {
+                    "week": "6",
+                    "day": "1",
+                    "time": [
+                        "1",
+                        "2"
+                    ]
+                },
+                {
+                    "week": "6",
+                    "day": "2",
+                    "time": [
+                        "3",
+                        "4"
+                    ]
+                },
+                {
+                    "week": "7",
+                    "day": "1",
+                    "time": [
+                        "1",
+                        "2"
+                    ]
+                },
+                {
+                    "week": "7",
+                    "day": "2",
+                    "time": [
+                        "3",
+                        "4"
+                    ]
+                },
+                {
+                    "week": "8",
+                    "day": "1",
+                    "time": [
+                        "1",
+                        "2"
+                    ]
+                },
+                {
+                    "week": "8",
+                    "day": "2",
+                    "time": [
+                        "3",
+                        "4"
+                    ]
+                },
+                {
+                    "week": "9",
+                    "day": "1",
+                    "time": [
+                        "1",
+                        "2"
+                    ]
+                },
+                {
+                    "week": "9",
+                    "day": "2",
+                    "time": [
+                        "3",
+                        "4"
+                    ]
+                },
+                {
+                    "week": "10",
+                    "day": "1",
+                    "time": [
+                        "1",
+                        "2"
+                    ]
+                },
+                {
+                    "week": "10",
+                    "day": "2",
+                    "time": [
+                        "3",
+                        "4"
+                    ]
+                }
+            ],
+            "teacher_id": "10001111",
             "student_ids": [
-                "1"
+                "23120001"
             ]
         }]
 
-        accounts = {"statement": statement, "students": students, "teachers": teachers, "admins": admins,
+        accounts = {"statements": statements, "students": students, "teachers": teachers, "admins": admins,
                     "courses": courses}
 
         configs = {
             "auto_backup": "1",
-            "allow_course_conflict": "0",
             "show_password": "0",
             "week_num": "10",
             "exclude_dirs": ["materials_data"],
             "exclude_files": []
         }
+
+        self.check_dir(r"./data/")
 
         with open(r"./data/data.json", "w") as f:
             json.dump(accounts, f, indent=4)
