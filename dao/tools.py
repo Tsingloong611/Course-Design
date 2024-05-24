@@ -258,6 +258,7 @@ class tools:
             "id": "1",
             "name": "AE4.2",
             "term": "2024 Spring",
+            "room": "1-233",
             "time": [
                 {
                     "week": "1",

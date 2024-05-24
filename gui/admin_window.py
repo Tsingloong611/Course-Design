@@ -264,6 +264,10 @@ class AdminWindow:
         term_label.pack()
         term_entry = ttk.Entry(other_frame)
         term_entry.pack()
+        room_label = ttk.Label(other_frame, text="教室")
+        room_label.pack()
+        room_entry = ttk.Entry(other_frame)
+        room_entry.pack()
         teacher_id_label = ttk.Label(other_frame, text="教师ID")
         teacher_id_label.pack()
         teacher_id_entry = ttk.Entry(other_frame)
@@ -274,6 +278,7 @@ class AdminWindow:
                         command=lambda: self.admin_logic.confirm_register_course(checkboxes, id=id_entry.get(),
                                                                                  name=name_entry.get(),
                                                                                  term=term_entry.get(),
+                                                                                 room=room_entry.get(),
                                                                                  teacher_id=teacher_id_entry.get()))
         btn.pack()
 

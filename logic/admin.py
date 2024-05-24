@@ -263,7 +263,7 @@ class AdminLogic:
 
         messagebox.showinfo("注册成功", f"课程{name}注册成功")
 
-    def confirm_register_course(self, checkboxes, id, name, term, teacher_id):
+    def confirm_register_course(self, checkboxes, id, name, term,room, teacher_id):
         """
         确认注册课程，检查课程信息是否完整
         :param checkboxes: 时间信息
@@ -290,6 +290,7 @@ class AdminLogic:
                 "id": id,
                 "name": name,
                 "term": term,
+                "room": room,
                 "time": [],
                 "teacher_id": teacher_id,
                 "student_ids": []

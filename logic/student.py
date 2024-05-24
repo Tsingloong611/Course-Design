@@ -251,7 +251,7 @@ class StudentLogic:
                     day = int(class_time["day"])
                     times = class_time["time"]
                     teacher_name = tools().get_info(type="teachers", id=course["teacher_id"])
-                    course_info = f"{course['name']}\nTeacher: {teacher_name}"
+                    course_info = f"{course['name']}\nTeacher: {teacher_name}\nRoom: {course['room']}"
                     for time in times:
                         if week == int(selected_week):
                             label = tk.Label(page, text=course_info, borderwidth=1, relief="solid", padx=10, pady=5)
